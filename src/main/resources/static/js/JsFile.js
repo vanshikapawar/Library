@@ -1,0 +1,257 @@
+document.addEventListener("DOMContentLoaded", function() {
+	
+	fetchAndUpdateBookList();
+    //registering new customers
+    const registerForm = document.getElementById("customer-form");
+    if (registerForm) {
+        registerForm.addEventListener("submit", function(event) {
+            event.preventDefault(); 
+            
+            const formData = new FormData(registerForm);
+            const custName = formData.get("custName");
+			const age = formData.get("age");
+            const mobile_no = formData.get("custMobile");
+			const email = formData.get("email");
+            const custAddress = formData.get("custAddress");
+
+
+            fetch("/customer", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    cust_name: custName,
+					age: age,
+                    mobile_no: mobile_no,
+					email: email,
+                    cust_address: custAddress
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    
+                    alert("Customer registered successfully!");
+                    registerForm.reset(); 
+                } else {
+                    
+                    alert("Failed to register customer. Please try again.");
+                }
+            })
+            .catch(error => {
+                console.error("Error registering customer:", error);
+                alert("An unexpected error occurred. Please try again later.");
+            });
+        });
+    }
+    
+    
+    // Add a new book
+    const addBookForm = document.getElementById("add-book-section");
+    if (addBookForm) {
+        addBookForm.addEventListener("submit", function(event) {
+            event.preventDefault(); 
+            
+            const formData = new FormData(addBookForm);
+            const book_name = formData.get("title");
+            const author = formData.get("author");
+            const genre = formData.get("genre");
+			const total_stock = formData.get("stock");
+            const available_copies = formData.get("copies");
+  
+            fetch("/books", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    book_name: book_name,
+                    author: author,
+                    genre: genre,
+					available_copies: available_copies,
+                    total_stock: total_stock
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    fetchAndUpdateBookList();
+                    alert("Book added successfully!");
+                    addBookForm.reset(); 
+                } else {
+                    
+                    alert("Failed to add book. Please try again.");
+                }
+            })
+            .catch(error => {
+                console.error("Error adding book:", error);
+                alert("An unexpected error occurred. Please try again later.");
+            });
+        });
+    }
+    
+    function fetchAndUpdateBookList() {
+    fetch("/books")
+    .then(response => response.json())
+    .then(data => {
+        const bookTableBody = document.getElementById("bookTableBody");
+        bookTableBody.innerHTML = "";
+
+        data.forEach(books => {
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>${books.book_id}</td>
+                <td>${books.book_name}</td>
+                <td>${books.author}</td>
+                <td>${books.genre}</td>
+                <td>${books.total_stock}</td>
+				<td>${books.available_copies}</td>
+                <!-- Add more <td> elements for other book attributes -->
+            `;
+            bookTableBody.appendChild(newRow);
+        });
+    })
+    .catch(error => console.error("Error fetching book list:", error));
+}
+
+//deleting a book
+const deleteBookForm = document.getElementById("delete-book-form");
+if (deleteBookForm) {
+    deleteBookForm.addEventListener("submit", function(event) {
+        event.preventDefault(); 
+        
+        const formData = new FormData(deleteBookForm);
+        const book_name = formData.get("bookName");
+		const author = formData.get("author");
+
+        fetch(`/books?book_name=${book_name}&author=${author}`, {  
+            method: "DELETE"
+        })
+        .then(response => {
+            if (response.ok) {
+				fetchAndUpdateBookList();
+                alert("Book deleted successfully!");
+                deleteBookForm.reset(); 
+            } else if (response.status === 404) {
+                alert("Book not found.");
+            } else {
+                alert("An unexpected error occurred. Please try again later.");
+            }
+        })
+        .catch(error => {
+            console.error("Error deleting book:", error);
+            alert("An unexpected error occurred. Please try again later.");
+        });
+    });
+}
+
+
+	//issue book
+    const issueBookForm = document.getElementById("issue-book-form");
+    if (issueBookForm) {
+        issueBookForm.addEventListener("submit", function(event) {
+            event.preventDefault(); 
+            
+
+            const formData = new FormData(issueBookForm);
+            const book_name = formData.get("book_name");
+            const cust_name = formData.get("cust_name");
+			const email = formData.get("email");
+
+            fetch(`/issuebook?book_name=${book_name}&cust_name=${cust_name}&email=${email}`, {
+                method: "POST"
+            })
+            .then(response => {
+                if (response.ok) {
+                    fetchAndUpdateBookList();
+                    alert("Book issued successfully!");
+                    issueBookForm.reset(); 
+                } else if (response.status === 400) {
+                    
+                    alert("No available copies of the book");
+                } else if (response.status === 404) {
+                    
+                    alert("Book or customer not found.");
+                } else {
+                 
+                    alert("An unexpected error occurred. Please try again later.");
+                }
+            })
+            .catch(error => {
+                console.error("Error issuing book:", error);
+                alert("An unexpected error occurred. Please try again later.");
+            });
+        });
+    }
+
+
+
+
+   /*
+    //search customers
+    const searchForm = document.getElementById("search-form");
+    if (searchForm) {
+        searchForm.addEventListener("submit", function(event) {
+            event.preventDefault(); 
+            
+ 
+            const formData = new FormData(searchForm);
+            const userId = formData.get("userId");
+
+
+            fetch(/customers/search?userId=${userId})
+            .then(response => {
+                if (response.ok) {
+                   
+                } else if (response.status === 404) {
+                    
+                    alert("Customer not found.");
+                } else {
+                    
+                    alert("An unexpected error occurred. Please try again later.");
+                }
+            })
+            .catch(error => {
+                console.error("Error searching customer:", error);
+                alert("An unexpected error occurred. Please try again later.");
+            });
+        });
+    }
+    
+    */
+    
+    const returnBookForm = document.getElementById("return-book-form");
+	if (returnBookForm) {
+    returnBookForm.addEventListener("submit", function(event) {
+        event.preventDefault(); 
+        
+
+        const formData = new FormData(returnBookForm);
+        const book_name = formData.get("book_name");
+        const cust_name = formData.get("cust_name");
+		const email = formData.get("email");
+
+
+        fetch(`/returnbook?book_name=${book_name}&cust_name=${cust_name}&email=${email}`, {
+            method: "POST"
+        })
+		.then(response => response.json())  // Parse the JSON response
+		.then(data => {
+		    if (data.status === "success") {  // Check the "status" field in the JSON response
+		        fetchAndUpdateBookList();
+		        alert(data.message);  // Use the message from the response
+		        returnBookForm.reset(); 
+		    } else if (data.status === "error") {
+		        alert(data.message);  // Use the error message from the response
+		    } else {
+		        alert("An unexpected error occurred. Please try again later.");
+		    }
+        })
+        .catch(error => {
+            console.error("Error returning book:", error);
+            alert("An unexpected error occurred. Please try again later.");
+        });
+    });
+}
+
+    
+});
