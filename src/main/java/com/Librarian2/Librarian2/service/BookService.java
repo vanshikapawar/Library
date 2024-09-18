@@ -8,4 +8,5 @@ public interface BookService {
 	public List<Books> getBook();
 	Books addBook(Books book);
 	boolean removeBook(String book_name, String author);
+	List<Books> searchBooks(String query);
 }

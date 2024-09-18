@@ -107,5 +107,10 @@ public class LibController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
     }
+	
+	@GetMapping("/search")
+    public List<Books> searchBooks(@RequestParam String query) {
+        return bookService.searchBooks(query);
+    }
 
 }

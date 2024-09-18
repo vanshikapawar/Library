@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function() {
             })
             .then(response => {
                 if (response.ok) {
-                    
+                    console.log("in the console check");
                     alert("Customer registered successfully!");
                     registerForm.reset(); 
                 } else {
@@ -93,7 +93,9 @@ document.addEventListener("DOMContentLoaded", function() {
     fetch("/books")
     .then(response => response.json())
     .then(data => {
+		console.log("data form the book table", data);
         const bookTableBody = document.getElementById("bookTableBody");
+		console.log("the book table body", bookTableBody);
         bookTableBody.innerHTML = "";
 
         data.forEach(books => {
@@ -108,6 +110,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 <!-- Add more <td> elements for other book attributes -->
             `;
             bookTableBody.appendChild(newRow);
+			console.log("the new row",newRow);
         });
     })
     .catch(error => console.error("Error fetching book list:", error));
@@ -252,6 +255,55 @@ if (deleteBookForm) {
         });
     });
 }
+
+// Search functionality
+const searchForm = document.getElementById("searchForm");
+const searchResultsSection = document.getElementById("search-results-section");
+const bookTableBody = document.getElementById("searchbookTableBody");
+
+searchForm.addEventListener("submit", function(event) {
+    event.preventDefault();
+    
+    const searchQuery = document.getElementById("searchQuery").value.trim(); // Trim whitespace
+
+    // Make a fetch request to search for books
+    fetch(`/search?query=${encodeURIComponent(searchQuery)}`) // Corrected endpoint
+        .then(response => response.json())
+        .then(data => {
+            if (data.length > 0) {
+                // Clear any previous search results
+                bookTableBody.innerHTML = "";
+
+                // Display the results in the table
+                data.forEach(books => {
+                    const newRow = document.createElement('tr');
+                    newRow.innerHTML = `
+                        <td>${books.book_id}</td>
+                        <td>${books.book_name}</td>
+                        <td>${books.author}</td>
+                        <td>${books.genre}</td>
+                        <td>${books.total_stock}</td>
+                        <td>${books.available_copies}</td>
+                    `;
+                    bookTableBody.appendChild(newRow);
+                });
+
+                // Show the search result table
+                searchResultsSection.style.display = "block";
+            } else {
+                alert("No books found matching your search query.");
+                searchResultsSection.style.display = "none"; // Hide table if no results
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching book search results:", error);
+            alert("An error occurred while searching for books. Please try again.");
+            searchResultsSection.style.display = "none"; // Hide table if there's an error
+        });
+});
+
+
+
 
     
 });

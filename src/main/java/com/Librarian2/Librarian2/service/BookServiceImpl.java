@@ -57,5 +57,10 @@ public class BookServiceImpl implements BookService{
         	throw new NoSuchElementException("Book not found with name: " + book_name + " by " + author);
         }
 	}
+
+	@Override
+	public List<Books> searchBooks(String query) {
+		return bookDao.searchBooks(query);
+	}
 		
 }
