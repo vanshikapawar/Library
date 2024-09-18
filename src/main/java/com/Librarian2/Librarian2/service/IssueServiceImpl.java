@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import com.Librarian2.Librarian2.dao.BookDao;
@@ -28,6 +30,9 @@ public class IssueServiceImpl implements IssueService{
 	
 	@Autowired
 	private BookDao bookDao;
+	
+	@Autowired
+    private JavaMailSender mailSender;
 	
 	@Override
 	public List<IssueBook> getIssuedBook() {
@@ -63,6 +68,7 @@ public class IssueServiceImpl implements IssueService{
                 issue.setIdeal_return_date(Date.valueOf(LocalDate.now().plusDays(7)));
                 issue.setAmt_to_be_paid(0);
                 issueDao.save(issue);
+                sendCustomMail(issue);
                 return true; 
             } else {
                 return false;
@@ -145,9 +151,30 @@ public class IssueServiceImpl implements IssueService{
 	    
 	    return response;
 	}
+	
+	
 
 	        
-	        
+	private void sendCustomMail(IssueBook issue) {
+        String email = issue.getCustomer().getEmail();  
+        String subject = "Book Issued: "+ issue.getBook().getBook_name();
+        String message = "Dear " + issue.getCustomer().getCust_name() + ",\n\n" +
+        		"We are pleased to inform you that the book " +issue.getBook().getBook_name() +" has been successfully issued to you. Please find the details below: \n\n"
+
+        			+ "Issue Date: "+ issue.getIssue_date() + "\n"
+        			+ "Due Date: "+ issue.getIdeal_return_date()+"\n"
+        			+ "Late Return Charges: ₹7 per day for the first 7 days, and ₹10 per day after that. \n\n"
+        			+ " We hope you enjoy the book and kindly request that it be returned on or before the due date to avoid any late charges.\n\n"
+
+        			+ "Best regards,\n"
+        			+"Librarian2.0 Team";
+
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(email);
+        mailMessage.setSubject(subject);
+        mailMessage.setText(message);
+        mailSender.send(mailMessage);
+    }      
 
 
 }

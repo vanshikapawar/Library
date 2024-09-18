@@ -38,7 +38,7 @@ public class CustomerServiceImpl implements CustomerService {
         String subject = "Welcome to Our Library";
         String message = "Dear " + customer.getCust_name() + ",\n\n" +
                          "Thank you for registering with our library. We hope you enjoy exploring our collection of books.\n\n" +
-                         "Best regards,\nLibrary Team";
+                         "Best regards,\nLibrarian2.0 Team";
 
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(email);
