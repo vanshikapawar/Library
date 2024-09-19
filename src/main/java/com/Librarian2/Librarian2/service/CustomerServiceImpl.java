@@ -47,4 +47,9 @@ public class CustomerServiceImpl implements CustomerService {
         mailSender.send(mailMessage);
     }
 
+	@Override
+	public Customer findByEmail(String email) {
+		return customerDao.findByEmail(email).orElse(null);
+	}
+
 }

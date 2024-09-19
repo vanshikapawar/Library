@@ -1,6 +1,12 @@
 document.addEventListener("DOMContentLoaded", function() {
 	
 	fetchAndUpdateBookList();
+	
+	const emailField = document.getElementById("emaill");
+	    if (emailField) {
+	        emailField.addEventListener("blur", fetchCustomerName);
+	    }
+
     //registering new customers
     const registerForm = document.getElementById("customer-form");
     if (registerForm) {
@@ -255,6 +261,23 @@ if (deleteBookForm) {
         });
     });
 }
+
+
+
+function fetchCustomerName() {
+    const email = document.getElementById("emaill").value;
+	console.log("fetchCustomerName triggered");
+    if (email) {
+      fetch(`/byEmail?email=${encodeURIComponent(email)}`)
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById("cust_name").value = data.name || "Customer not found";
+        })
+        .catch(error => {
+          console.error('Error fetching customer:', error);
+        });
+    }
+  }
 
 // Search functionality
 const searchForm = document.getElementById("searchForm");

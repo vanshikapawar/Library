@@ -112,5 +112,15 @@ public class LibController {
     public List<Books> searchBooks(@RequestParam String query) {
         return bookService.searchBooks(query);
     }
+	
+	@GetMapping("/byEmail")
+    public ResponseEntity<?> getCustomerByEmail(@RequestParam String email) {
+        Customer customer = customerService.findByEmail(email);
+        if (customer != null) {
+            return ResponseEntity.ok(Map.of("name", customer.getCust_name()));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Customer not found"));
+        }
+    }
 
 }
