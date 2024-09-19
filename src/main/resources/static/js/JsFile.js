@@ -326,6 +326,55 @@ searchForm.addEventListener("submit", function(event) {
 });
 
 
+// Add Event functionality
+const addEventForm = document.getElementById("add-event-form");
+
+addEventForm.addEventListener("submit", function(event) {
+    event.preventDefault(); // Prevent default form submission
+
+    // Collect form data
+    const eventName = document.getElementById("event_name").value.trim();
+    const details = document.getElementById("details").value.trim();
+    const eventDate = document.getElementById("event_date").value;
+    const venue = document.getElementById("venue").value.trim();
+    const time = document.getElementById("time").value;
+
+    // Check if any fields are empty
+    if (!eventName || !details || !eventDate || !venue || !time) {
+        alert("Please fill in all required fields.");
+        return;
+    }
+
+    // Create the event object
+    const eventData = {
+        event_name: eventName,
+        details: details,
+        event_date: eventDate,
+        venue: venue,
+        time: time
+    };
+
+    // Make a fetch request to add the event
+    fetch('/eventAdd', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(eventData)
+    })
+    .then(response => {
+        if (response.ok) {
+            alert("Event added successfully!");
+            addEventForm.reset(); // Reset the form fields
+        } else {
+            throw new Error('Failed to add event');
+        }
+    })
+    .catch(error => {
+        console.error("Error adding event:", error);
+        alert("An error occurred while adding the event. Please try again.");
+    });
+});
 
 
     

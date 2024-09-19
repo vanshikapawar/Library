@@ -17,9 +17,11 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.Librarian2.Librarian2.models.Books;
 import com.Librarian2.Librarian2.models.Customer;
+import com.Librarian2.Librarian2.models.Events;
 import com.Librarian2.Librarian2.models.IssueBook;
 import com.Librarian2.Librarian2.service.BookService;
 import com.Librarian2.Librarian2.service.CustomerService;
+import com.Librarian2.Librarian2.service.EventService;
 import com.Librarian2.Librarian2.service.IssueService;
 
 @RestController
@@ -33,6 +35,9 @@ public class LibController {
 	
 	@Autowired
 	private IssueService issueService;
+	
+	@Autowired
+	private EventService eventService;
 	
 	@GetMapping("/home")
 	public ModelAndView home() {
@@ -122,5 +127,15 @@ public class LibController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Customer not found"));
         }
     }
+	
+	 @PostMapping("/eventAdd")
+	    public String addEvent(@RequestBody Events event) {
+	        try {
+	            eventService.addEvent(event);
+	            return "redirect:/events"; // Redirect to the events list or a success page
+	        } catch (Exception e) {
+	            return "error"; // Redirect to an error page or handle error
+	        }
+	    }
 
 }
