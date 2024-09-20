@@ -80,15 +80,30 @@
             </form>
         </section>
 
-        <section id="search-section">
-            <h2 align="center">Search Customer</h2>
-            <form action="/customers/search" method="GET">
-                <label for="userId">User ID:</label>
-                <input type="text" id="userId" name="userId" required><br>
+        <section id="searchCustomerSection">
+        <h2 align="center">Search Issued Books by Customer</h2>
+        <form id="customerSearchForm" action="/searchCust" method="GET">
+            <label for="customerEmail">Enter the Customer Email</label>
+            <input type="text" id="customerEmail" name="email" required><br>
+            <button type="submit">Search</button>
+        </form>
+    </section>
 
-                <button type="submit">Search</button>
-            </form>
-        </section>
+    <section id="issuedBooksResultsSection" style="display: none;">
+        <h3 align="center">Issued Books</h3>
+        <table id="issuedBooksTable">
+            <thead>
+                <tr>
+                    <th>Issued On</th>
+                    <th>Book Name</th>
+                </tr>
+            </thead>
+            <tbody id="issuedBooksTableBody">
+                <!-- Table rows will be dynamically added here -->
+            </tbody>
+        </table>
+    </section>
+
 
         <section id="books-section">
             <h2 align="center">Available Books</h2>

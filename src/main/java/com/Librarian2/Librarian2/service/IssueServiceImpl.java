@@ -2,6 +2,7 @@ package com.Librarian2.Librarian2.service;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -175,6 +176,22 @@ public class IssueServiceImpl implements IssueService{
         mailMessage.setText(message);
         mailSender.send(mailMessage);
     }      
+	
+	@Override
+	public List<Map<String, Object>> findIssuedBooksByEmail(String email) {
+        List<Object[]> results = issueDao.findActiveIssuesByCustomerEmail(email);
+        List<Map<String, Object>> issuedBooks = new ArrayList<>();
+
+        for (Object[] result : results) {
+            Map<String, Object> issuedBook = new HashMap<>();
+            issuedBook.put("book_name", result[0]);
+            issuedBook.put("issue_date", result[1]);
+            issuedBooks.add(issuedBook);
+        }
+
+        return issuedBooks;
+    }
+
 
 
 }

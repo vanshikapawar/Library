@@ -10,4 +10,5 @@ public interface IssueService {
 	IssueBook addIssueBook(IssueBook issue);
 	boolean issuedBook(String book_name, String cust_name, String email);
 	public Map<String, Object> returnBook(String book_name, String cust_name, String email);
+	List<Map<String, Object>> findIssuedBooksByEmail(String email);
 }

@@ -216,3 +216,28 @@ footer ul li{
     margin-top: 20px;
     text-align: center;
 }
+
+#issuedBooksTable {
+    width: 80%;
+    margin: 0 auto; 
+    border-collapse: collapse;
+}
+
+#issuedBooksTable th, #issuedBooksTable td {
+    padding: 8px;
+    border: 1px solid #ddd;
+}
+
+#issuedBooksTable th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+#issuedBooksTable tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+#issuedBooksTable tbody tr:hover {
+    background-color: #ddd;
+}
+

@@ -160,5 +160,10 @@ public class LibController {
 	            return "error"; // Redirect to an error page or handle error
 	        }
 	    }
+	 
+	 @GetMapping("/searchCust")
+	 public List<Map<String, Object>> getIssuedBooksByEmail(@RequestParam String email) {
+	     return issueService.findIssuedBooksByEmail(email);
+	 }
 
 }

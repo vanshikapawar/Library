@@ -430,6 +430,57 @@ addEventForm.addEventListener("submit", function(event) {
     });
 });
 
+// Search functionality
+// Search functionality
+const customerSearchForm = document.getElementById("customerSearchForm");
+const issuedBooksResultsSection = document.getElementById("issuedBooksResultsSection");
+const issuedBooksTableBody = document.getElementById("issuedBooksTableBody");
+
+customerSearchForm.addEventListener("submit", function(event) {
+    event.preventDefault(); // Prevent the default form submission
+
+    const email = document.getElementById("customerEmail").value.trim(); // Get the email input
+
+    // Make a fetch request to search for issued books
+    fetch(`/searchCust?email=${encodeURIComponent(email)}`) // Corrected endpoint
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log("the issued book data", data);
+            if (data.length > 0) {
+                // Clear any previous results
+                issuedBooksTableBody.innerHTML = "";
+
+                // Display the results in the table
+                data.forEach(item => {
+                    const issuedDate = new Date(item.issue_date); // Create a Date object
+                    const formattedDate = issuedDate.toISOString().split('T')[0]; // Format to YYYY-MM-DD
+
+                    const newRow = document.createElement('tr');
+                    newRow.innerHTML = `
+                        <td>${formattedDate}</td> <!-- Display formatted date -->
+                        <td>${item.book_name}</td>
+                    `;
+                    issuedBooksTableBody.appendChild(newRow);
+                });
+
+                // Show the results section
+                issuedBooksResultsSection.style.display = 'block';
+            } else {
+                alert("No issued books found for this email.");
+                issuedBooksResultsSection.style.display = 'none'; // Hide table if no results
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching issued books:", error);
+            alert("An error occurred while fetching issued books. Please try again.");
+            issuedBooksResultsSection.style.display = 'none'; // Hide table if there's an error
+        });
+});
 
     
 });
