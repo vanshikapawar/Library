@@ -20,6 +20,10 @@ document.addEventListener("DOMContentLoaded", function() {
 			const email = formData.get("email");
             const custAddress = formData.get("custAddress");
 
+			if (!validateEmail(email)) {
+			            alert("Please enter a valid email address.");
+			            return;
+			        }
 
             fetch("/customer", {
                 method: "POST",
@@ -51,6 +55,29 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
     
+	function validateEmail(email) {
+	    // Regular expression for validating email
+	    const emailPattern = /^[a-zA-Z][a-zA-Z0-9._%+-]*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+	    if (!emailPattern.test(email)) {
+	        return false;
+	    }
+
+	    const atIndex = email.indexOf('@');
+	    const dotIndex = email.indexOf('.', atIndex);
+	    
+	    // Check if '@' comes before '.'
+	    if (atIndex === -1 || dotIndex === -1 || atIndex > dotIndex) {
+	        return false;
+	    }
+	    
+	    // Check for special characters and that '@' or '.' is not the first character
+	    if (/[!#$%^&*(),?":{}|<>]/.test(email) || ['@', '.', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'].includes(email[0])) {
+	        return false;
+	    }
+
+	    return true;
+	}
     
     // Add a new book
     const addBookForm = document.getElementById("add-book-section");
