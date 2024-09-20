@@ -57,6 +57,32 @@ public class BookServiceImpl implements BookService{
         	throw new NoSuchElementException("Book not found with name: " + book_name + " by " + author);
         }
 	}
+	
+	@Override
+	public boolean removeCustomCopies(String book_name, String author, int numCopies) {
+	    Optional<Books> optionalBook = bookDao.findByNameAndAuthor(book_name, author);
+	    if (optionalBook.isPresent()) {
+	        Books book = optionalBook.get();
+
+	        int availableCopies = book.getAvailable_copies();
+	        int totalStock = book.getTotal_stock();
+
+	        // Check if the number of copies to be removed is valid
+	        if (numCopies > availableCopies || numCopies > totalStock) {
+	            throw new IllegalArgumentException("Cannot remove more copies than available in stock.");
+	        }
+
+	        // Update available copies and total stock
+	        book.setAvailable_copies(availableCopies - numCopies);
+	        book.setTotal_stock(totalStock - numCopies);
+
+	        bookDao.save(book);
+	        return true;
+	    } else {
+	        throw new NoSuchElementException("Book not found with name: " + book_name + " by " + author);
+	    }
+	}
+
 
 	@Override
 	public List<Books> searchBooks(String query) {

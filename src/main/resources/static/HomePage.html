@@ -140,6 +140,15 @@
                 
                 <label for="author">Author</label>
                 <input type="text" id="author" name="author" required><br>
+                
+                <label for="customRemove" style="display: inline;">Remove Custom Number of Copies?</label>
+                <input type="checkbox" id="customRemove" name="customRemove" style="display: inline; margin-left: 10px;"><br>
+
+				<!-- Input for number of copies (hidden initially, shown when checkbox is checked) -->
+        <div id="numCopiesDiv" style="display: none;">
+            <label for="numCopies">Number of Copies to Remove</label>
+            <input type="number" id="numCopies" name="numCopies" min="1" placeholder="Enter number of copies"><br>
+        </div>
 
                 <button type="submit">Remove Book</button>
             </form>

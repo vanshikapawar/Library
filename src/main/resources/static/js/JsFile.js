@@ -149,6 +149,18 @@ document.addEventListener("DOMContentLoaded", function() {
     .catch(error => console.error("Error fetching book list:", error));
 }
 
+const customRemoveCheckbox = document.getElementById("customRemove");
+    const numCopiesDiv = document.getElementById("numCopiesDiv");
+
+    // Show or hide the input for number of copies based on checkbox selection
+    customRemoveCheckbox.addEventListener("change", function() {
+        if (this.checked) {
+            numCopiesDiv.style.display = "block";  // Show the input when checkbox is checked
+        } else {
+            numCopiesDiv.style.display = "none";   // Hide the input when checkbox is unchecked
+        }
+    });
+
 //deleting a book
 const deleteBookForm = document.getElementById("delete-book-form");
 if (deleteBookForm) {
@@ -158,10 +170,25 @@ if (deleteBookForm) {
         const formData = new FormData(deleteBookForm);
         const book_name = formData.get("bookName");
 		const author = formData.get("author");
+		
+		const customRemove = formData.get("customRemove"); // Checkbox value
+		        const numCopies = formData.get("numCopies"); // Number of copies to remove
 
-        fetch(`/books?book_name=${book_name}&author=${author}`, {  
+				// Create URL parameters based on user selection
+				        let url = `/books?book_name=${book_name}&author=${author}`;
+				        
+				        // Check if the user selected to remove a custom number of copies
+				        if (customRemove && numCopies) {
+				            url += `&customRemove=true&numCopies=${numCopies}`;
+				        }
+
+				
+        /*fetch(`/books?book_name=${book_name}&author=${author}`, {  
             method: "DELETE"
-        })
+        })*/
+		fetch(url, {  
+		            method: "DELETE"
+		        })
         .then(response => {
             if (response.ok) {
 				fetchAndUpdateBookList();

@@ -56,7 +56,7 @@ public class LibController {
 		return new ResponseEntity<>(addedBook, HttpStatus.CREATED);
 	}
 	
-	@DeleteMapping("/books")
+	/*@DeleteMapping("/books")
     public ResponseEntity<Void> deleteBook(@RequestParam("book_name") String book_name, @RequestParam("author") String author) {
         boolean deleted = this.bookService.removeBook(book_name, author);
         if (deleted) {
@@ -64,7 +64,30 @@ public class LibController {
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-    }
+    }*/
+	
+	@DeleteMapping("/books")
+	public ResponseEntity<Void> deleteBook(@RequestParam("book_name") String bookName, 
+	                                       @RequestParam("author") String author, 
+	                                       @RequestParam(value = "customRemove", required = false) Boolean customRemove, 
+	                                       @RequestParam(value = "numCopies", required = false) Integer numCopies) {
+	    boolean deleted;
+	    
+	    if (Boolean.TRUE.equals(customRemove) && numCopies != null) {
+	        // Remove a custom number of copies
+	        deleted = this.bookService.removeCustomCopies(bookName, author, numCopies);
+	    } else {
+	        // Remove the book entirely
+	        deleted = this.bookService.removeBook(bookName, author);
+	    }
+	    
+	    if (deleted) {
+	        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+	    } else {
+	        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	    }
+	}
+
 	
 	@GetMapping("/customer")
 	public List<Customer> getCustomers(){
