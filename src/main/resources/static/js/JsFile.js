@@ -20,6 +20,11 @@ document.addEventListener("DOMContentLoaded", function() {
 			const email = formData.get("email");
             const custAddress = formData.get("custAddress");
 
+			if (!/^[A-Za-z\s]+$/.test(custName)) {
+			            alert("Customer name should only contain alphabets and spaces.");
+			            return;
+			        }
+			
 			if (!validateEmail(email)) {
 			            alert("Please enter a valid email address.");
 			            return;
@@ -91,6 +96,16 @@ document.addEventListener("DOMContentLoaded", function() {
             const genre = formData.get("genre");
 			const total_stock = formData.get("stock");
             const available_copies = formData.get("copies");
+			
+			if (!/^[A-Za-z\s]+$/.test(author)) {
+						            alert("Author name should only contain alphabets and spaces.");
+						            return;
+						        }
+								
+								if (!/^[A-Za-z\s,]+$/.test(genre)) {
+								            alert("Genre should only contain alphabets, spaces, and commas.");
+								            return;
+								        }
   
             fetch("/books", {
                 method: "POST",
@@ -170,6 +185,11 @@ if (deleteBookForm) {
         const formData = new FormData(deleteBookForm);
         const book_name = formData.get("bookName");
 		const author = formData.get("author");
+		
+		if (!/^[A-Za-z\s]+$/.test(author)) {
+								            alert("Author name should only contain alphabets and spaces.");
+								            return;
+								        }
 		
 		const customRemove = formData.get("customRemove"); // Checkbox value
 		        const numCopies = formData.get("numCopies"); // Number of copies to remove
@@ -320,7 +340,6 @@ if (deleteBookForm) {
 
 function fetchCustomerName() {
     const email = document.getElementById("emaill").value;
-	console.log("fetchCustomerName triggered");
     if (email) {
       fetch(`/byEmail?email=${encodeURIComponent(email)}`)
         .then(response => response.json())
@@ -430,7 +449,7 @@ addEventForm.addEventListener("submit", function(event) {
     });
 });
 
-// Search functionality
+
 // Search functionality
 const customerSearchForm = document.getElementById("customerSearchForm");
 const issuedBooksResultsSection = document.getElementById("issuedBooksResultsSection");
@@ -440,6 +459,10 @@ customerSearchForm.addEventListener("submit", function(event) {
     event.preventDefault(); // Prevent the default form submission
 
     const email = document.getElementById("customerEmail").value.trim(); // Get the email input
+	if (!validateEmail(email)) {
+				            alert("Please enter a valid email address.");
+				            return;
+				        }
 
     // Make a fetch request to search for issued books
     fetch(`/searchCust?email=${encodeURIComponent(email)}`) // Corrected endpoint
