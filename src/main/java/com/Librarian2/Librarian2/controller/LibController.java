@@ -56,15 +56,21 @@ public class LibController {
 		return new ResponseEntity<>(addedBook, HttpStatus.CREATED);
 	}
 	
-	/*@DeleteMapping("/books")
-    public ResponseEntity<Void> deleteBook(@RequestParam("book_name") String book_name, @RequestParam("author") String author) {
-        boolean deleted = this.bookService.removeBook(book_name, author);
-        if (deleted) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	// Method to add copies to an existing book
+    @PostMapping("/addBookCopies")
+    public ResponseEntity<String> addBookCopies(@RequestBody Books book) {
+        try {
+            boolean updated = bookService.addBookCopies(book);
+            if (updated) {
+                return new ResponseEntity<>("Book copies updated successfully!", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("Book not found to update.", HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>("Error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    }*/
+    }
+	
 	
 	@DeleteMapping("/books")
 	public ResponseEntity<Void> deleteBook(@RequestParam("book_name") String bookName, 

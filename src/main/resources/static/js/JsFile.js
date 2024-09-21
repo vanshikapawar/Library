@@ -86,6 +86,7 @@ document.addEventListener("DOMContentLoaded", function() {
     
     // Add a new book
     const addBookForm = document.getElementById("add-book-section");
+	const addToExistingCheckbox = document.getElementById("add-to-existing");
     if (addBookForm) {
         addBookForm.addEventListener("submit", function(event) {
             event.preventDefault(); 
@@ -96,6 +97,7 @@ document.addEventListener("DOMContentLoaded", function() {
             const genre = formData.get("genre");
 			const total_stock = formData.get("stock");
             const available_copies = formData.get("copies");
+			const addToExisting = addToExistingCheckbox.checked;
 			
 			if (!/^[A-Za-z\s]+$/.test(author)) {
 						            alert("Author name should only contain alphabets and spaces.");
@@ -107,7 +109,7 @@ document.addEventListener("DOMContentLoaded", function() {
 								            return;
 								        }
   
-            fetch("/books", {
+            fetch(addToExisting ? "/addBookCopies" : "/books", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -123,7 +125,7 @@ document.addEventListener("DOMContentLoaded", function() {
             .then(response => {
                 if (response.ok) {
                     fetchAndUpdateBookList();
-                    alert("Book added successfully!");
+                    alert(addToExisting ? "Book copies updated successfully!" : "Book added successfully!");
                     addBookForm.reset(); 
                 } else {
                     

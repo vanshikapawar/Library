@@ -22,4 +22,10 @@ public interface BookDao extends JpaRepository<Books, Long>{
 	           "OR LOWER(b.genre) LIKE LOWER(CONCAT('%', :query, '%')) " +
 	           "OR LOWER(b.author) LIKE LOWER(CONCAT('%', :query, '%'))")
 	    List<Books> searchBooks(@Param("query") String query);
+	
+	@Query(value = "SELECT * FROM books WHERE book_name = :bookName AND author = :author AND genre = :genre", nativeQuery = true)
+	Optional<Books> findByBookNameAndAuthorAndGenre(
+	        @Param("bookName") String bookName, 
+	        @Param("author") String author, 
+	        @Param("genre") String genre);
 }

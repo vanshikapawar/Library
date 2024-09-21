@@ -5,6 +5,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
 
 import com.Librarian2.Librarian2.dao.BookDao;
@@ -87,6 +88,23 @@ public class BookServiceImpl implements BookService{
 	@Override
 	public List<Books> searchBooks(String query) {
 		return bookDao.searchBooks(query);
+	}
+
+	@Override
+	public boolean addBookCopies(Books book) {
+	    Optional<Books> existingBookOpt = bookDao.findByBookNameAndAuthorAndGenre(book.getBook_name(), book.getAuthor(), book.getGenre());
+	    if (existingBookOpt.isPresent()) {
+	        Books existingBook = existingBookOpt.get();
+	        // Update available copies and total stock
+	        existingBook.setAvailable_copies(existingBook.getAvailable_copies() + book.getAvailable_copies());
+	        existingBook.setTotal_stock(existingBook.getTotal_stock() + book.getTotal_stock());
+
+	        // Save the updated book back to the database
+	        bookDao.save(existingBook);
+	        return true; // Indicate that the update was successful
+	    } else {
+	        return false; // Indicate that the book was not found
+	    }
 	}
 		
 }
