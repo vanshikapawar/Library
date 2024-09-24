@@ -99,7 +99,7 @@ document.addEventListener("DOMContentLoaded", function() {
             const available_copies = formData.get("copies");
 			const addToExisting = addToExistingCheckbox.checked;
 			
-			if (!/^[A-Za-z\s]+$/.test(author)) {
+			if (!/^[A-Za-z\s.]+$/.test(author)) {
 						            alert("Author name should only contain alphabets and spaces.");
 						            return;
 						        }
@@ -108,6 +108,11 @@ document.addEventListener("DOMContentLoaded", function() {
 								            alert("Genre should only contain alphabets, spaces, and commas.");
 								            return;
 								        }
+										
+										if (total_stock < available_copies) {
+										            alert("Total stock must be equal to or greater than available copies. Please check the entries");
+										            return;
+										        }						
   
             fetch(addToExisting ? "/addBookCopies" : "/books", {
                 method: "POST",
@@ -129,7 +134,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     addBookForm.reset(); 
                 } else {
                     
-                    alert("Failed to add book. Please try again.");
+                    alert("Failed to add book. Please check the fields entried and try again.");
                 }
             })
             .catch(error => {
@@ -188,7 +193,7 @@ if (deleteBookForm) {
         const book_name = formData.get("bookName");
 		const author = formData.get("author");
 		
-		if (!/^[A-Za-z\s]+$/.test(author)) {
+		if (!/^[A-Za-z\s.]+$/.test(author)) {
 								            alert("Author name should only contain alphabets and spaces.");
 								            return;
 								        }
@@ -219,7 +224,7 @@ if (deleteBookForm) {
             } else if (response.status === 404) {
                 alert("Book not found.");
             } else {
-                alert("An unexpected error occurred. Please try again later.");
+                alert("Please check the values of the field entered as required book not founr");
             }
         })
         .catch(error => {
@@ -241,6 +246,11 @@ if (deleteBookForm) {
             const book_name = formData.get("book_name");
             const cust_name = formData.get("cust_name");
 			const email = formData.get("email");
+			
+			if (!validateEmail(email)) {
+						            alert("Please enter a valid email address.");
+						            return;
+						        }
 
             fetch(`/issuebook?book_name=${book_name}&cust_name=${cust_name}&email=${email}`, {
                 method: "POST"
@@ -270,39 +280,6 @@ if (deleteBookForm) {
 
 
 
-
-   /*
-    //search customers
-    const searchForm = document.getElementById("search-form");
-    if (searchForm) {
-        searchForm.addEventListener("submit", function(event) {
-            event.preventDefault(); 
-            
- 
-            const formData = new FormData(searchForm);
-            const userId = formData.get("userId");
-
-
-            fetch(/customers/search?userId=${userId})
-            .then(response => {
-                if (response.ok) {
-                   
-                } else if (response.status === 404) {
-                    
-                    alert("Customer not found.");
-                } else {
-                    
-                    alert("An unexpected error occurred. Please try again later.");
-                }
-            })
-            .catch(error => {
-                console.error("Error searching customer:", error);
-                alert("An unexpected error occurred. Please try again later.");
-            });
-        });
-    }
-    
-    */
     
     const returnBookForm = document.getElementById("return-book-form");
 	if (returnBookForm) {
@@ -315,7 +292,11 @@ if (deleteBookForm) {
         const cust_name = formData.get("cust_name");
 		const email = formData.get("email");
 
-
+		if (!validateEmail(email)) {
+					            alert("Please enter a valid email address.");
+					            return;
+					        }
+		
         fetch(`/returnbook?book_name=${book_name}&cust_name=${cust_name}&email=${email}`, {
             method: "POST"
         })
