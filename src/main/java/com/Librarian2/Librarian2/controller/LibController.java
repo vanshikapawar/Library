@@ -126,6 +126,19 @@ public class LibController {
         }
     }
 	
+	@PostMapping("/reissuebook")
+	public ResponseEntity<String> reissueBook(@RequestParam String book_name, 
+	                                          @RequestParam String cust_name, 
+	                                          @RequestParam String email) {
+	    Map<String, Object> response = issueService.reissueBook(book_name, cust_name, email);
+	    if (response.get("status").equals("success")) {
+	        return ResponseEntity.ok("Success");
+	    } else {
+	        return ResponseEntity.status((Integer) response.get("status_code")).body(response.get("message").toString());
+	    }
+	}
+
+	
 	@PostMapping("/returnbook")
     public ResponseEntity<Map<String, Object>> returnABook(
         @RequestParam String book_name, 

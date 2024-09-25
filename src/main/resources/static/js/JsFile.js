@@ -237,6 +237,7 @@ if (deleteBookForm) {
 
 	//issue book
     const issueBookForm = document.getElementById("issue-book-form");
+	const reissuebook = document.getElementById("re-issue");
     if (issueBookForm) {
         issueBookForm.addEventListener("submit", function(event) {
             event.preventDefault(); 
@@ -246,19 +247,20 @@ if (deleteBookForm) {
             const book_name = formData.get("book_name");
             const cust_name = formData.get("cust_name");
 			const email = formData.get("email");
+			const reissue = reissuebook.checked;
 			
 			if (!validateEmail(email)) {
 						            alert("Please enter a valid email address.");
 						            return;
 						        }
-
-            fetch(`/issuebook?book_name=${book_name}&cust_name=${cust_name}&email=${email}`, {
+								const url = reissue ? `/reissuebook` : `/issuebook`;
+            fetch(`${url}?book_name=${book_name}&cust_name=${cust_name}&email=${email}`, {
                 method: "POST"
             })
             .then(response => {
                 if (response.ok) {
                     fetchAndUpdateBookList();
-                    alert("Book issued successfully!");
+                    alert(reissue ? "Book reissued successfully!" : "Book issued successfully!");
                     issueBookForm.reset(); 
                 } else if (response.status === 400) {
                     

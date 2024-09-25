@@ -265,6 +265,12 @@ footer{
 
 #issuedBooksTable tbody tr:hover {
     background-color: #ddd;
+    color: black;
+}
+
+#issuedBooksTable tbody tr {
+    background-color: #ddd;
+    color: black;
 }
 
 #customer-section{

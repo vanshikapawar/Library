@@ -192,6 +192,21 @@ public class IssueServiceImpl implements IssueService{
         return issuedBooks;
     }
 
+	@Override
+    public Map<String, Object> reissueBook(String book_name, String cust_name, String email) {
+        Map<String, Object> response = new HashMap<>();
 
+        IssueBook issueRecord = issueDao.findByIssuedBookForCust(book_name, email);
+        if (issueRecord != null) {
+            issueRecord.setIssue_date(Date.valueOf(LocalDate.now())); // Update issue date
+            issueDao.save(issueRecord);
+            response.put("status", "success");
+            response.put("message", "Book reissued successfully.");
+        } else {
+            response.put("status_code", 404);
+            response.put("message", "No active issue record found for reissue.");
+        }
+        return response;
+    }
 
 }
