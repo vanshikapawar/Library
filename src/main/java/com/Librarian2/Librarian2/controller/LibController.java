@@ -1,16 +1,23 @@
 package com.Librarian2.Librarian2.controller;
 
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+
 import java.util.List;
 import java.util.Map;
-
+import org.springframework.http.MediaType;
+import org.springframework.http.HttpHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-//import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
@@ -22,6 +29,7 @@ import com.Librarian2.Librarian2.models.IssueBook;
 import com.Librarian2.Librarian2.service.BookService;
 import com.Librarian2.Librarian2.service.CustomerService;
 import com.Librarian2.Librarian2.service.EventService;
+import com.Librarian2.Librarian2.service.ExcelService;
 import com.Librarian2.Librarian2.service.IssueService;
 
 @RestController
@@ -38,6 +46,9 @@ public class LibController {
 	
 	@Autowired
 	private EventService eventService;
+	
+	@Autowired
+	private ExcelService exService;
 	
 	@GetMapping("/home")
 	public ModelAndView home() {
@@ -202,5 +213,17 @@ public class LibController {
 	            return ResponseEntity.status(500).body(Map.of("error", "Failed to fetch amount: " + e.getMessage()));
 	        }
 	    }
+	 
+	 @RequestMapping("/excel")
+		public ResponseEntity<Resource> download() throws IOException{
+			String filename = "availableBooks.xlsx";
+			ByteArrayInputStream actualData = exService.getActualData();
+			InputStreamResource file= new InputStreamResource(actualData);
+
+			ResponseEntity<Resource> body =ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,"attachment; filename="+filename)
+			.contentType(MediaType.parseMediaType("application/vnd.ms-excel")).body(file);
+			
+			return body;
+		}
 
 }

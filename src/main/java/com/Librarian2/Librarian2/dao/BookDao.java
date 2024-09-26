@@ -28,4 +28,8 @@ public interface BookDao extends JpaRepository<Books, Long>{
 	        @Param("bookName") String bookName, 
 	        @Param("author") String author, 
 	        @Param("genre") String genre);
+	
+	@Query(value = "SELECT * FROM Books WHERE available_copies > 0", nativeQuery = true)
+	List<Books> findAvailableBooks();
+
 }

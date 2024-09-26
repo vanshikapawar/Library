@@ -506,6 +506,39 @@ searchForm.addEventListener("submit", function(event) {
 });
 
 
+// Add event listener for the Export to Excel button
+document.getElementById('exportButton').addEventListener('click', function() {
+    // Make a call to the API
+    fetch('/excel', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/vnd.ms-excel',
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.blob(); // Convert response to a Blob
+        } else {
+            throw new Error('Failed to download file');
+        }
+    })
+    .then(blob => {
+        // Create a URL for the Blob and set it to a link to download
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'availableBooks.xlsx'; // Set the file name
+        document.body.appendChild(a);
+        a.click(); // Simulate a click on the link
+        a.remove(); // Remove the link from the document
+        window.URL.revokeObjectURL(url); // Clean up the URL object
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+});
+
+
 // Add Event functionality
 const addEventForm = document.getElementById("add-event-form");
 
