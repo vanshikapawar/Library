@@ -184,5 +184,15 @@ public class LibController {
 	 public List<Map<String, Object>> getIssuedBooksByEmail(@RequestParam String email) {
 	     return issueService.findIssuedBooksByEmail(email);
 	 }
+	 
+	 @GetMapping("/getAmountToPay")
+	    public ResponseEntity<?> getAmountToPay(@RequestParam String email, @RequestParam String book_name) {
+	        try {
+	            double amountToPay = issueService.calculateAmountToPay(email, book_name);
+	            return ResponseEntity.ok(Map.of("amount", amountToPay));
+	        } catch (Exception e) {
+	            return ResponseEntity.status(500).body(Map.of("error", "Failed to fetch amount: " + e.getMessage()));
+	        }
+	    }
 
 }

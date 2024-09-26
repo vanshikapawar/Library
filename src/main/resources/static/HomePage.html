@@ -18,7 +18,7 @@
         <li><a href="#customer-section">Register Customer</a></li>
         <li><a href="#books-section">Available Books</a></li>
         <li><a href="#add-a-book-section">Add Book</a></li>
-        <li><a href="#delete-book-section">Delete Book</a></li>
+        <li><a href="#delete-book-section">Remove Book</a></li>
         <li><a href="#issue-section">Issue Book</a></li>
         <li><a href="#return-book-section">Return Book</a></li>
     </ul>
@@ -184,7 +184,7 @@
                 <input type="text" id="book_name" name="book_name" required><br>
 
 				<label for="email">Customer Email:</label>
-                <input type="text" id="emaill" name="email" onblur="fetchCustomerName()" required><br>
+                <input type="text" id="emaill" name="email" required><br>
 
                 <label for="cust_name">Customer Name:</label>
                 <input type="text" id="cust_name" name="cust_name" required><br>
@@ -194,7 +194,7 @@
             </form>
         </section>
         
-        <section id="return-book-section">
+        <!-- <section id="return-book-section">
             <h2 align="center">Return a Book</h2>
             <form id="return-book-form">
                 <label for="book_name">Book Name:</label>
@@ -209,7 +209,32 @@
                 
                 <button type="submit">Return Book</button>
             </form>
-        </section>
+        </section>   -->
+        
+        
+        <section id="return-book-section">
+    <h2 align="center">Return a Book</h2>
+    <form id="return-book-form">
+        <label for="book_name">Book Name:</label>
+        <input type="text" id="book_namee" name="book_name" required><br>
+
+        <label for="email">Customer Email:</label> 
+        <input type="text" id="cust_email" name="email" required><br>
+
+        <label for="cust_name">Customer Name:</label>
+        <input type="text" id="cust_namee" name="cust_name" required><br>
+
+        <label for="amount_to_be_paid">Amount to be Paid:</label>
+        <input type="text" id="amount_to_be_paid" name="amount_to_be_paid" required readonly><br>
+
+        <label style="display: inline;">Amount Paid:</label>
+        <input type="radio" id="amount_confirm_radio" name="amount_confirm" value="paid"> Yes<br>
+
+        <button type="submit" id="submit_return_btn" disabled>Return Book</button>
+    </form>
+</section>
+
+
         
         <section id="add-event-section">
     <h2 align="center">Add an Event</h2>

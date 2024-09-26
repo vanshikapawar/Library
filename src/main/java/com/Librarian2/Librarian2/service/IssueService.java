@@ -12,4 +12,5 @@ public interface IssueService {
 	public Map<String, Object> returnBook(String book_name, String cust_name, String email);
 	List<Map<String, Object>> findIssuedBooksByEmail(String email);
 	Map<String, Object> reissueBook(String book_name, String cust_name, String email);
+	Integer calculateAmountToPay(String email, String bookName);
 }

@@ -24,5 +24,10 @@ public interface IssueDao extends JpaRepository<IssueBook, Long>{
 IssueBook findByIssuedBookForCust(@Param("bookName") String bookName, 
                                @Param("email") String email);
 
+	
+	@Query(value="SELECT ib.amt_to_be_paid FROM issue_book ib JOIN customer c ON ib.cust_id = c.cust_id JOIN books b ON ib.book_id = b.book_id WHERE c.email = :email AND b.book_name = :bookName AND ib.actual_return_date IS NULL", nativeQuery = true)
+	Integer findAmountToPay(@Param("email") String email, @Param("bookName") String bookName);
 
 }
+
+

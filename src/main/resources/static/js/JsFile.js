@@ -6,6 +6,16 @@ document.addEventListener("DOMContentLoaded", function() {
 	    if (emailField) {
 	        emailField.addEventListener("blur", fetchCustomerName);
 	    }
+		
+		const emailCust = document.getElementById("cust_email");
+		if(emailCust){
+			emailCust.addEventListener("blur",fetchCustName);
+		}
+		
+		const amtByEmail = document.getElementById("cust_namee");
+		if(amtByEmail){
+			amtByEmail.addEventListener("blur",fetchAmountToPay);
+		}
 
     //registering new customers
     const registerForm = document.getElementById("customer-form");
@@ -282,7 +292,7 @@ if (deleteBookForm) {
 
 
 
-    
+    /*
     const returnBookForm = document.getElementById("return-book-form");
 	if (returnBookForm) {
     returnBookForm.addEventListener("submit", function(event) {
@@ -319,8 +329,82 @@ if (deleteBookForm) {
             alert("An unexpected error occurred. Please try again later.");
         });
     });
+}*/
+
+
+const returnBookForm = document.getElementById("return-book-form");
+const submitReturnBtn = document.getElementById("submit_return_btn");
+const amountConfirmRadio = document.getElementById("amount_confirm_radio");
+
+
+if (returnBookForm) {
+    returnBookForm.addEventListener("submit", function(event) {
+        event.preventDefault(); 
+
+        const formData = new FormData(returnBookForm);
+        const bookName = formData.get("book_name");
+        const customerName = formData.get("cust_name");
+        const customerEmail = formData.get("email");
+        const isAmountPaid = amountConfirmRadio.checked;  // Check if the amount has been confirmed as paid
+
+        if (!validateEmail(customerEmail)) {
+            alert("Please enter a valid email address.");
+            return;
+        }
+
+        if (!isAmountPaid) {
+            alert("Please confirm that the amount has been paid.");
+            return;
+        }
+
+        fetch(`/returnbook?book_name=${bookName}&cust_name=${customerName}&email=${customerEmail}`, {
+            method: "POST"
+        })
+        .then(response => response.json())  // Parse the JSON response
+        .then(data => {
+            if (data.status === "success") {  // Check the "status" field in the JSON response
+                fetchAndUpdateBookList();
+                alert(data.message);  // Use the message from the response
+                returnBookForm.reset();
+                submitReturnBtn.disabled = true;  // Disable the button again after success
+                amountConfirmRadio.checked = false;  // Reset the radio button
+            } else if (data.status === "error") {
+                alert(data.message);  // Use the error message from the response
+            } else {
+                alert("An unexpected error occurred. Please try again later.");
+            }
+        })
+        .catch(error => {
+            console.error("Error returning book:", error);
+            alert("An unexpected error occurred. Please try again later.");
+        });
+    });
 }
 
+function confirmAmountPaid() {
+    // Enable the Return Book button only if the amount is confirmed as paid
+    submitReturnBtn.disabled = !amountConfirmRadio.checked;
+}
+
+// Add event listener for the radio button to call confirmAmountPaid
+if (amountConfirmRadio) {
+    amountConfirmRadio.addEventListener("change", confirmAmountPaid);
+}
+
+
+function fetchCustName() {
+    const email = document.getElementById("cust_email").value;
+    if (email) {
+      fetch(`/byEmail?email=${encodeURIComponent(email)}`)
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById("cust_namee").value = data.name || "Customer not found";
+        })
+        .catch(error => {
+          console.error('Error fetching customer:', error);
+        });
+    }
+  }
 
 
 function fetchCustomerName() {
@@ -337,6 +421,40 @@ function fetchCustomerName() {
     }
   }
 
+  
+  function fetchAmountToPay() {
+      const email = document.getElementById("cust_email").value; // Get the email value
+      const bookName = document.getElementById("book_namee").value; // Get the book name value
+
+      if (email && bookName) {
+          fetch(`/getAmountToPay?email=${encodeURIComponent(email)}&book_name=${encodeURIComponent(bookName)}`)
+              .then(response => {
+                  if (!response.ok) {
+                      throw new Error('Network response was not ok');
+                  }
+                  return response.json(); // Parse the JSON response
+              })
+              .then(data => {
+                  const amountField = document.getElementById("amount_to_be_paid");
+                  if (data.amount) { // Assuming the response has an 'amount' field
+                      amountField.value = data.amount; // Populate the amount field
+                  } else {
+                      alert("Amount not found for this book and customer.");
+                      amountField.value = ''; // Clear the amount field if not found
+                  }
+              })
+              .catch(error => {
+                  console.error("Error fetching amount to pay:", error);
+                  alert("An error occurred while fetching the amount. Please try again.");
+              });
+      } else {
+          alert("Please enter both email and book name.");
+      }
+  }
+
+  
+  
+  
 // Search functionality
 const searchForm = document.getElementById("searchForm");
 const searchResultsSection = document.getElementById("search-results-section");

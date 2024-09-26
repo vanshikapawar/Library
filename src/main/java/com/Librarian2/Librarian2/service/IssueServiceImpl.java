@@ -208,5 +208,10 @@ public class IssueServiceImpl implements IssueService{
         }
         return response;
     }
+	
+	@Override
+	public Integer calculateAmountToPay(String email, String bookName) {
+		return issueDao.findAmountToPay(email, bookName);
+	}
 
 }
