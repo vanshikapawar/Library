@@ -50,6 +50,13 @@ public class LibController {
 		return this.bookService.getBook();
 	}
 	
+	
+	@GetMapping("/events")
+	public List<Events> getEvents(){
+		return this.eventService.getEvents();
+	}
+	
+	
 	@PostMapping("/books")
 	public ResponseEntity<Books> addBooks(@RequestBody Books book) {
 		Books addedBook =this.bookService.addBook(book);
@@ -170,11 +177,12 @@ public class LibController {
         }
     }
 	
+	
 	 @PostMapping("/eventAdd")
 	    public String addEvent(@RequestBody Events event) {
 	        try {
 	            eventService.addEvent(event);
-	            return "redirect:/events"; // Redirect to the events list or a success page
+	            return "success"; // Redirect to the events list or a success page
 	        } catch (Exception e) {
 	            return "error"; // Redirect to an error page or handle error
 	        }

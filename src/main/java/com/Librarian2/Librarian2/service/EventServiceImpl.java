@@ -1,5 +1,7 @@
 package com.Librarian2.Librarian2.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -20,6 +22,11 @@ public class EventServiceImpl implements EventService{
 
     @Autowired
     private JavaMailSender emailSender;
+    
+    @Override
+	public List<Events> getEvents() {
+		return eventDao.findAll();
+	}
     
 	@Override
 	public void addEvent(Events event) throws Exception {

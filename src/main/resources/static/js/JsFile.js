@@ -2,6 +2,8 @@ document.addEventListener("DOMContentLoaded", function() {
 	
 	fetchAndUpdateBookList();
 	
+	fetchAndUpdateEventList();
+	
 	const emailField = document.getElementById("emaill");
 	    if (emailField) {
 	        emailField.addEventListener("blur", fetchCustomerName);
@@ -180,6 +182,8 @@ document.addEventListener("DOMContentLoaded", function() {
     })
     .catch(error => console.error("Error fetching book list:", error));
 }
+
+
 
 const customRemoveCheckbox = document.getElementById("customRemove");
     const numCopiesDiv = document.getElementById("numCopiesDiv");
@@ -540,6 +544,7 @@ addEventForm.addEventListener("submit", function(event) {
     })
     .then(response => {
         if (response.ok) {
+			fetchAndUpdateEventList();
             alert("Event added successfully!");
             addEventForm.reset(); // Reset the form fields
         } else {
@@ -551,6 +556,33 @@ addEventForm.addEventListener("submit", function(event) {
         alert("An error occurred while adding the event. Please try again.");
     });
 });
+
+
+function fetchAndUpdateEventList() {
+fetch("/events")
+.then(response =>response.json())
+.then(data =>{
+const eventTableBody=document.getElementById("eventTableBody");
+
+eventTableBody.innerHTML="";
+
+data.forEach(events =>{
+const newRow=document.createElement('tr');
+newRow.innerHTML=`
+                <td>${events.id}</td>
+                <td>${events.event_name}</td>
+                <td>${events.details}</td>
+                <td>${events.venue}</td>
+                <td>${events.event_date}</td>
+		   <td>${events.time}</td>
+             
+            `;
+eventTableBody.appendChild(newRow);
+
+});
+})
+.catch(error =>console.error("Error fetching event list:", error));
+}
 
 
 // Search functionality

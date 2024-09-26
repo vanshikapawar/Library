@@ -111,6 +111,10 @@ button:hover {
     text-align: center;
 }
 
+#view-event-section {
+    text-align: center;
+}
+
 #search-results-section{
 	padding-top:100px;
 	margin-bottom:-30px;
@@ -148,6 +152,38 @@ button:hover {
 }
 
 
+#eventTable{
+    width: 80%;
+    margin: 0 auto;
+    border-collapse: collapse;
+}
+ 
+#eventTable th,#eventTable td{
+    padding: 8px;
+    border: 1px solid #ddd;
+}
+ 
+#eventTable th{
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+ 
+#eventTable tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+ 
+#eventTable tbody tr{
+    background-color: #ddd;
+    color: black;
+}
+ 
+#eventTable tbody tr:hover{
+    background-color: #ddd;
+    color: black;
+}
+
+
+
 nav {
 	padding-left: 20px;
 	position: fixed;
@@ -180,11 +216,13 @@ nav ul li a {
 }
 
 footer ul li{
-	margin-right: 120px;
+	margin-right: 80px;
+	
 }
 
 footer{
 	color: white;
+	margin-top: 100px;
 }
 
 /* Google-like search bar */
