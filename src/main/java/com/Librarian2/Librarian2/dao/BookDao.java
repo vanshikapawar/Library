@@ -31,5 +31,8 @@ public interface BookDao extends JpaRepository<Books, Long>{
 	
 	@Query(value = "SELECT * FROM Books WHERE available_copies > 0", nativeQuery = true)
 	List<Books> findAvailableBooks();
+	
+	@Query(value = "SELECT DISTINCT genre FROM books", nativeQuery = true)
+    List<String> getAllGenres();
 
 }

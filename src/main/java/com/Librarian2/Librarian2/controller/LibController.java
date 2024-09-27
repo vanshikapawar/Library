@@ -225,5 +225,11 @@ public class LibController {
 			
 			return body;
 		}
+	 
+	 @GetMapping("/genres")
+		public List<String> getGenres() {
+			return bookService.getGenres(); // Implement this method in your service
+		}
+
 
 }

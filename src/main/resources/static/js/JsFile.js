@@ -9,12 +9,19 @@ document.addEventListener("DOMContentLoaded", function() {
 	        emailField.addEventListener("blur", fetchCustomerName);
 	    }
 		
+	
 		const emailCust = document.getElementById("cust_email");
-		if(emailCust){
-			emailCust.addEventListener("blur",fetchCustName);
+		if (emailCust) {
+		    emailCust.addEventListener("blur", function () {
+		        fetchCustName();  // Call the function to fetch customer name
+		        console.log("Email entered, fetch book data:", emailCust.value);
+		        populateBookDropdown(emailCust.value); // Call the dropdown population function
+		    });
 		}
 		
-		const amtByEmail = document.getElementById("cust_namee");
+		
+		
+		const amtByEmail = document.getElementById("book");
 		if(amtByEmail){
 			amtByEmail.addEventListener("blur",fetchAmountToPay);
 		}
@@ -223,10 +230,7 @@ if (deleteBookForm) {
 				            url += `&customRemove=true&numCopies=${numCopies}`;
 				        }
 
-				
-        /*fetch(`/books?book_name=${book_name}&author=${author}`, {  
-            method: "DELETE"
-        })*/
+		
 		fetch(url, {  
 		            method: "DELETE"
 		        })
@@ -294,46 +298,68 @@ if (deleteBookForm) {
         });
     }
 
-
-
-    /*
-    const returnBookForm = document.getElementById("return-book-form");
-	if (returnBookForm) {
-    returnBookForm.addEventListener("submit", function(event) {
-        event.preventDefault(); 
-        
-
-        const formData = new FormData(returnBookForm);
-        const book_name = formData.get("book_name");
-        const cust_name = formData.get("cust_name");
-		const email = formData.get("email");
-
-		if (!validateEmail(email)) {
-					            alert("Please enter a valid email address.");
-					            return;
-					        }
-		
-        fetch(`/returnbook?book_name=${book_name}&cust_name=${cust_name}&email=${email}`, {
-            method: "POST"
+    
+// Function to populate dropdown with book names
+function populateBookDropdown(email) {
+    console.log("In populate function");
+ 
+    // Fetch request to get issued books by customer email
+    fetch(`/searchCust?email=${encodeURIComponent(email)}`)
+        .then(response => {
+            console.log("Response status:", response.status);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
         })
-		.then(response => response.json())  // Parse the JSON response
-		.then(data => {
-		    if (data.status === "success") {  // Check the "status" field in the JSON response
-		        fetchAndUpdateBookList();
-		        alert(data.message);  // Use the message from the response
-		        returnBookForm.reset(); 
-		    } else if (data.status === "error") {
-		        alert(data.message);  // Use the error message from the response
-		    } else {
-		        alert("An unexpected error occurred. Please try again later.");
-		    }
+        .then(data => {
+            const bookDropdown = document.getElementById("book");
+            // Ensure the dropdown exists
+            if (!bookDropdown) {
+                console.error("Dropdown element not found");
+                return;
+            }
+			console.log("id",bookDropdown);
+ 
+            // Clear previous options
+            bookDropdown.innerHTML = ""; // Reset dropdown
+ 
+            // Add default "Select a book" option at the start
+            const defaultOption = document.createElement('option');
+            defaultOption.value = ""; // No value for the default option
+            defaultOption.textContent = "Select a book"; // Display text
+            bookDropdown.appendChild(defaultOption); // Add default option to the dropdown
+ 
+            if (data.length > 0) {
+                console.log("Book data received for dropdown:", data);
+                // Populate the dropdown with book names from the fetched data
+				
+                data.forEach(book => {
+					console.log("Book ",book);
+                    const option = document.createElement('option');
+                    option.value = book.book_name; // Use book_name as value
+                    option.textContent = book.book_name; // Display book name
+                    bookDropdown.appendChild(option); // Add option to the dropdown
+                    console.log("Option added:", option); // Debug added option
+                });
+ 
+            } else {
+                // No data found case
+                bookDropdown.innerHTML = '<option value="">No books available</option>';
+            }
+ 
+            // Ensure the dropdown shows the first (default) option
+            bookDropdown.selectedIndex = 0;
         })
         .catch(error => {
-            console.error("Error returning book:", error);
-            alert("An unexpected error occurred. Please try again later.");
+            console.error("Error fetching issued books for dropdown:", error);
+            const bookDropdown = document.getElementById("book_name");
+            if (bookDropdown) {
+                bookDropdown.innerHTML = '<option value="">No books available</option>';
+            }
         });
-    });
-}*/
+}
+ 
 
 
 const returnBookForm = document.getElementById("return-book-form");
@@ -428,7 +454,7 @@ function fetchCustomerName() {
   
   function fetchAmountToPay() {
       const email = document.getElementById("cust_email").value; // Get the email value
-      const bookName = document.getElementById("book_namee").value; // Get the book name value
+      const bookName = document.getElementById("book").value; // Get the book name value
 
       if (email && bookName) {
           fetch(`/getAmountToPay?email=${encodeURIComponent(email)}&book_name=${encodeURIComponent(bookName)}`)

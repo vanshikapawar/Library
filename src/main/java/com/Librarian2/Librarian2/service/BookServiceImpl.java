@@ -106,5 +106,11 @@ public class BookServiceImpl implements BookService{
 	        return false; // Indicate that the book was not found
 	    }
 	}
+	
+	@Override
+	public List<String> getGenres() {
+		return bookDao.getAllGenres();
+	}
+	
 		
 }

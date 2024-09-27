@@ -196,35 +196,23 @@
             </form>
         </section>
         
-        <!-- <section id="return-book-section">
-            <h2 align="center">Return a Book</h2>
-            <form id="return-book-form">
-                <label for="book_name">Book Name:</label>
-                <input type="text" id="book_name" name="book_name" required><br>
-
-				<label for="email">Customer Email:</label>
-                <input type="text" id="email" name="email" onblur="fetchCustomerName()" required><br>
-
-                <label for="cust_name">Customer Name:</label>
-                <input type="text" id="cust_name" name="cust_name" required><br>
-                
-                
-                <button type="submit">Return Book</button>
-            </form>
-        </section>   -->
-        
-        
         <section id="return-book-section">
     <h2 align="center">Return a Book</h2>
     <form id="return-book-form">
-        <label for="book_name">Book Name:</label>
-        <input type="text" id="book_namee" name="book_name" required><br>
-
+        
         <label for="email">Customer Email:</label> 
         <input type="text" id="cust_email" name="email" required><br>
 
         <label for="cust_name">Customer Name:</label>
         <input type="text" id="cust_namee" name="cust_name" required><br>
+  
+        
+        <label for="book">Book Name:</label>
+        <select id="book" name="book_name" required>
+            <option value="">Select a book</option>
+        </select><br>
+        
+
 
         <label for="amount_to_be_paid">Amount to be Paid:</label>
         <input type="text" id="amount_to_be_paid" name="amount_to_be_paid" required readonly><br>
