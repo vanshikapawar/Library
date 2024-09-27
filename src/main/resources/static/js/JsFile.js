@@ -3,6 +3,8 @@ document.addEventListener("DOMContentLoaded", function() {
 	fetchAndUpdateBookList();
 	
 	fetchAndUpdateEventList();
+
+    fetchGenres();
 	
 	const emailField = document.getElementById("emaill");
 	    if (emailField) {
@@ -149,6 +151,7 @@ document.addEventListener("DOMContentLoaded", function() {
             .then(response => {
                 if (response.ok) {
                     fetchAndUpdateBookList();
+                    fetchGenres();
                     alert(addToExisting ? "Book copies updated successfully!" : "Book added successfully!");
                     addBookForm.reset(); 
                 } else {
@@ -162,30 +165,174 @@ document.addEventListener("DOMContentLoaded", function() {
             });
         });
     }
+
+
     
-    function fetchAndUpdateBookList() {
+// // Function to dynamically populate the dropdown
+// function populateGenreDropdown(genres) {
+//     const dropdownContent = document.getElementById('genreDropdown');
+//     dropdownContent.innerHTML = ''; // Clear any existing genres
+
+//     genres.forEach(genre => {
+//         const label = document.createElement('label');
+//         label.innerHTML = `<input type="radio" name="genre" value="${genre}"> ${genre}`;
+//         dropdownContent.appendChild(label);
+//     });
+
+//     // Add event listeners to each radio button
+//     const genreInputs = dropdownContent.querySelectorAll('input[type="radio"]');
+//     genreInputs.forEach(input => {
+//         input.addEventListener('change', updateBookListByGenre);
+//     });
+// }
+
+// Populate dropdown with checkboxes for each genre
+function populateGenreDropdown(genres) {
+    const genreDropdown = document.getElementById("genreDropdown");
+    genreDropdown.innerHTML = ""; // Clear existing content
+
+    // genres.forEach(genre => {
+    //     const checkbox = document.createElement("input");
+    //     checkbox.type = "checkbox";
+    //     checkbox.value = genre;
+    //     checkbox.id = genre;
+
+    //     const label = document.createElement("label");
+    //     label.htmlFor = genre;
+    //     label.appendChild(document.createTextNode(genre));
+
+    //     genreDropdown.appendChild(checkbox);
+    //     genreDropdown.appendChild(label);
+    //     genreDropdown.appendChild(document.createElement("br"));
+    // });
+    genres.forEach(genre => {
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.value = genre;
+        checkbox.id = genre;
+    
+        const label = document.createElement("label");
+        label.htmlFor = genre;
+        label.appendChild(document.createTextNode(genre));
+    
+        // Create a container div for the checkbox and label
+        const container = document.createElement("div");
+        container.classList.add("genre-option"); // Add a class for styling
+    
+        // Append checkbox and label to the container
+        container.appendChild(checkbox);
+        container.appendChild(label);
+        
+        // Append the container to the dropdown
+        genreDropdown.appendChild(container);
+    });
+    
+
+    // Add event listener for checkboxes
+    genreDropdown.addEventListener("change", updateBookListByGenres);
+}
+
+
+// Update the book list based on selected genres
+function updateBookListByGenres() {
+    const selectedGenres = Array.from(document.querySelectorAll('#genreDropdown input[type="checkbox"]:checked'))
+        .map(checkbox => checkbox.value);
+
+    let url = "/books";  // Default URL to fetch all books
+
+    if (selectedGenres.length > 0) {
+        // Create a query string with the selected genres
+        const genreQuery = selectedGenres.map(genre => `genre=${encodeURIComponent(genre)}`).join("&");
+        url = `/genre?${genreQuery}`;  // If genres are selected, fetch books by genre
+    }
+
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            console.log("Fetched data:", data);
+            updateBookTable(data);  // Call function to update table
+        })
+        .catch(error => console.error("Error fetching book list:", error));
+}
+
+// Fetch genres from the API and populate the dropdown
+function fetchGenres() {
+    fetch('/genres')  // Assuming your API endpoint is '/genres'
+        .then(response => response.json())
+        .then(data => populateGenreDropdown(data))
+        .catch(error => console.error('Error fetching genres:', error));
+}
+    
+//     function fetchAndUpdateBookList() {
+//     fetch("/books")
+//     .then(response => response.json())
+//     .then(data => {
+// 		console.log("data form the book table", data);
+//         const bookTableBody = document.getElementById("bookTableBody");
+// 		console.log("the book table body", bookTableBody);
+//         bookTableBody.innerHTML = "";
+
+//         data.forEach(books => {
+//             const newRow = document.createElement('tr');
+//             newRow.innerHTML = `
+//                 <td>${books.book_id}</td>
+//                 <td>${books.book_name}</td>
+//                 <td>${books.author}</td>
+//                 <td>${books.genre}</td>
+//                 <td>${books.total_stock}</td>
+// 				<td>${books.available_copies}</td>
+//                 <!-- Add more <td> elements for other book attributes -->
+//             `;
+//             bookTableBody.appendChild(newRow);
+// 			console.log("the new row",newRow);
+//         });
+//     })
+//     .catch(error => console.error("Error fetching book list:", error));
+// }
+
+
+// Fetch books from the API and update the book list
+function fetchAndUpdateBookList() {
     fetch("/books")
     .then(response => response.json())
-    .then(data => {
-		console.log("data form the book table", data);
-        const bookTableBody = document.getElementById("bookTableBody");
-		console.log("the book table body", bookTableBody);
-        bookTableBody.innerHTML = "";
+    .then(data => updateBookTable(data))
+    .catch(error => console.error("Error fetching book list:", error));
+}
 
-        data.forEach(books => {
-            const newRow = document.createElement('tr');
-            newRow.innerHTML = `
-                <td>${books.book_id}</td>
-                <td>${books.book_name}</td>
-                <td>${books.author}</td>
-                <td>${books.genre}</td>
-                <td>${books.total_stock}</td>
-				<td>${books.available_copies}</td>
-                <!-- Add more <td> elements for other book attributes -->
-            `;
-            bookTableBody.appendChild(newRow);
-			console.log("the new row",newRow);
-        });
+// Function to update the book table with filtered data
+function updateBookTable(books) {
+    const bookTableBody = document.getElementById("bookTableBody");
+    bookTableBody.innerHTML = ""; // Clear the current list
+
+    books.forEach(book => {
+        const newRow = document.createElement('tr');
+        newRow.innerHTML = `
+            <td>${book.book_id}</td>
+            <td>${book.book_name}</td>
+            <td>${book.author}</td>
+            <td>${book.genre}</td>
+            <td>${book.total_stock}</td>
+            <td>${book.available_copies}</td>
+        `;
+        bookTableBody.appendChild(newRow);
+    });
+}
+
+// Function to update the book list based on the selected genre
+function updateBookListByGenre() {
+    const selectedGenre = document.querySelector('input[name="genre"]:checked');
+    const genreValue = selectedGenre ? selectedGenre.value : null;
+
+    let url = "/books";  // Default URL to fetch all books
+
+    if (genreValue) {
+        url = `/genre/${genreValue}`;  // If genre is selected, fetch books by genre
+    }
+
+    fetch(url)
+    .then(response => response.json())
+    .then(data => {
+        updateBookTable(data);  // Update the table with the fetched data
     })
     .catch(error => console.error("Error fetching book list:", error));
 }

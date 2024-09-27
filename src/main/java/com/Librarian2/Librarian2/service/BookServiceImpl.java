@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import org.hibernate.annotations.DialectOverride.OverridesAnnotation;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
@@ -112,5 +113,9 @@ public class BookServiceImpl implements BookService{
 		return bookDao.getAllGenres();
 	}
 	
+	@Override
+	public List<Books> getBooksByGenres(List<String> genres) {
+        return bookDao.findByGenreIn(genres); // Use 'findByGenreIn' to fetch books
+    }
 		
 }

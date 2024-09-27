@@ -12,4 +12,5 @@ public interface BookService {
 	boolean removeCustomCopies(String book_name, String author, int numCopies);
 	List<Books> searchBooks(String query);
 	List<String> getGenres();
+	List<Books> getBooksByGenres(List<String> genres);
 }

@@ -35,4 +35,10 @@ public interface BookDao extends JpaRepository<Books, Long>{
 	@Query(value = "SELECT DISTINCT genre FROM books", nativeQuery = true)
     List<String> getAllGenres();
 
+	@Query(value = "SELECT * FROM books WHERE genre = :genre", nativeQuery = true)
+    List<Books> findByGenre(@Param("genre") String genre);
+
+	@Query(value = "SELECT * FROM books WHERE genre IN (:genres)", nativeQuery = true)
+    List<Books> findByGenreIn(@Param("genres") List<String> genres);
+
 }
