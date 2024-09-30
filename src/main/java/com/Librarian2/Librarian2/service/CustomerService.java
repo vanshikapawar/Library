@@ -8,4 +8,5 @@ public interface CustomerService {
 	public List<Customer> getCustomer();
 	Customer addCustomer(Customer customer);
 	Customer findByEmail(String email);
+	List<String> getEmailSuggestions(String query);
 }

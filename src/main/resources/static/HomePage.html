@@ -81,13 +81,16 @@
         </section>
 
         <section id="searchCustomerSection">
-        <h2 align="center">Search Issued Books by Customer</h2>
-        <form id="customerSearchForm" action="/searchCust" method="GET">
-            <label for="customerEmail">Enter the Customer Email</label>
-            <input type="text" id="customerEmail" name="email" required><br>
-            <button type="submit">Search</button>
-        </form>
-    </section>
+            <h2 align="center">Search Issued Books by Customer</h2>
+            <form id="customerSearchForm" action="/searchCust" method="GET">
+                <label for="customerEmail">Enter the Customer Email</label>
+                <div class="email-input-wrapper">
+                    <input type="text" id="customerEmail" name="email" autocomplete="off" required><br>
+                    <div id="emailSuggestions" class="suggestions-dropdown"></div>
+                </div>
+                <button type="submit">Search</button>
+            </form>
+        </section>
 
     <section id="issuedBooksResultsSection" style="display: none;">
         <h2 align="center">Issued Books</h2>

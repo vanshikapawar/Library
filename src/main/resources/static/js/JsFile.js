@@ -6,6 +6,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
     fetchGenres();
 	
+    
+
 	const emailField = document.getElementById("emaill");
 	    if (emailField) {
 	        emailField.addEventListener("blur", fetchCustomerName);
@@ -885,6 +887,45 @@ function updatePagination(totalPages, currentPage) {
 document.addEventListener("DOMContentLoaded", function() {
     fetchAndUpdateBookList();
 });
+const customerEmailInput = document.getElementById("customerEmail");
+const emailSuggestions = document.getElementById("emailSuggestions");
 
+customerEmailInput.addEventListener("input", function() {
+    const inputValue = this.value;
+    if (inputValue.length >= 2) { // Start suggesting after 2 characters
+        fetch(`/emailSuggestions?query=${encodeURIComponent(inputValue)}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log("Received suggestions:", data); // Debug log
+                emailSuggestions.innerHTML = ""; // Clear previous suggestions
+                if (data.length > 0) {
+                    data.forEach(email => {
+                        const suggestion = document.createElement("div");
+                        suggestion.className = "suggestion-item";
+                        suggestion.textContent = email;
+                        suggestion.addEventListener("click", function() {
+                            customerEmailInput.value = email;
+                            emailSuggestions.innerHTML = ""; // Clear suggestions after selection
+                        });
+                        emailSuggestions.appendChild(suggestion);
+                        console.log("Added suggestion:", email); // Debug log
+                    });
+                    emailSuggestions.style.display = "block";
+                } else {
+                    emailSuggestions.style.display = "none";
+                }
+            })
+            .catch(error => console.error("Error fetching email suggestions:", error));
+    } else {
+        emailSuggestions.innerHTML = "";
+        emailSuggestions.style.display = "none";
+    }
+});
+document.addEventListener("click", function(event) {
+    if (!emailSuggestions.contains(event.target) && event.target !== customerEmailInput) {
+        emailSuggestions.innerHTML = "";
+        emailSuggestions.style.display = "none";
+    }
+});
 
 });

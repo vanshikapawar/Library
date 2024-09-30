@@ -52,4 +52,9 @@ public class CustomerServiceImpl implements CustomerService {
 		return customerDao.findByEmail(email).orElse(null);
 	}
 
+	@Override
+public List<String> getEmailSuggestions(String query) {
+    return customerDao.findEmailSuggestions(query);
+}
+
 }

@@ -458,3 +458,28 @@ footer{
     color: #ccc; /* Light grey text color */
 }
 
+.email-input-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 300px;
+}
+
+#emailSuggestions {
+    position: absolute;
+    width: 100%;
+    background-color: white;
+    border: 1px solid #ddd;
+    max-height: 150px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+}
+
+.suggestion-item {
+    padding: 5px;
+    cursor: pointer;
+}
+
+.suggestion-item:hover {
+    background-color: #f0f0f0;
+}

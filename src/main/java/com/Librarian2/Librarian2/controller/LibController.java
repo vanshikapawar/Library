@@ -274,4 +274,10 @@ public class LibController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+	@GetMapping("/emailSuggestions")
+public ResponseEntity<List<String>> getEmailSuggestions(@RequestParam String query) {
+    List<String> suggestions = customerService.getEmailSuggestions(query);
+    return ResponseEntity.ok(suggestions);
+}
+
 }
