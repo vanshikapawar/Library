@@ -16,4 +16,5 @@ public interface BookService {
 	List<String> getGenres();
 	long countTotalBooksByGenres(List<String> genres);
 	List<Books> getBooksByGenres(List<String> genres, Integer pageNo, Integer pageSize);
+	Books findByTitle(String title);
 }

@@ -144,5 +144,10 @@ public long countTotalBooksByGenres(List<String> genres) {
 	// public List<Books> getBooksByGenres(List<String> genres) {
     //     return bookDao.findByGenreIn(genres); // Use 'findByGenreIn' to fetch books
     // }
+
+	@Override
+public Books findByTitle(String title) {
+    return bookDao.findByName(title).orElse(null);
+}
 		
 }

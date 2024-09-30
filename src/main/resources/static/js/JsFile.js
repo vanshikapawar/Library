@@ -6,7 +6,39 @@ document.addEventListener("DOMContentLoaded", function() {
 
     fetchGenres();
 	
-    
+    autoPopulateBookDetails();
+
+    // Add this function after the existing code
+function autoPopulateBookDetails() {
+    const titleInput = document.getElementById("title");
+    const authorInput = document.getElementById("author");
+    const genreInput = document.getElementById("genre");
+    const addToExistingCheckbox = document.getElementById("add-to-existing");
+
+    addToExistingCheckbox.addEventListener("change", function() {
+        if (this.checked) {
+            titleInput.addEventListener("blur", fetchBookDetails);
+        } else {
+            titleInput.removeEventListener("blur", fetchBookDetails);
+            authorInput.value = "";
+            genreInput.value = "";
+        }
+    });
+
+    function fetchBookDetails() {
+        if (this.value.trim() !== "") {
+            fetch(`/bookDetails?title=${encodeURIComponent(this.value)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data) {
+                        authorInput.value = data.author || "";
+                        genreInput.value = data.genre || "";
+                    }
+                })
+                .catch(error => console.error("Error fetching book details:", error));
+        }
+    }
+}
 
 	const emailField = document.getElementById("emaill");
 	    if (emailField) {

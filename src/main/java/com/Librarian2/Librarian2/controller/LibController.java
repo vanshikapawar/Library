@@ -280,4 +280,17 @@ public ResponseEntity<List<String>> getEmailSuggestions(@RequestParam String que
     return ResponseEntity.ok(suggestions);
 }
 
+@GetMapping("/bookDetails")
+public ResponseEntity<Map<String, String>> getBookDetails(@RequestParam String title) {
+    Books book = bookService.findByTitle(title);
+    if (book != null) {
+        Map<String, String> details = new HashMap<>();
+        details.put("author", book.getAuthor());
+        details.put("genre", book.getGenre());
+        return ResponseEntity.ok(details);
+    } else {
+        return ResponseEntity.notFound().build();
+    }
+}
+
 }

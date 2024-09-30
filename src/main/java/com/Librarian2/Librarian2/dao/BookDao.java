@@ -51,4 +51,6 @@ public interface BookDao extends JpaRepository<Books, Long>{
 
 	@Query(value = "SELECT COUNT(*) FROM books WHERE genre IN (:genres)", nativeQuery = true)
 	long countByGenreIn(@Param("genres") List<String> genres);
+
+	
 }
