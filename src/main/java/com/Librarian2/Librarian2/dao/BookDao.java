@@ -52,5 +52,7 @@ public interface BookDao extends JpaRepository<Books, Long>{
 	@Query(value = "SELECT COUNT(*) FROM books WHERE genre IN (:genres)", nativeQuery = true)
 	long countByGenreIn(@Param("genres") List<String> genres);
 
-	
+	@Query("SELECT DISTINCT b.book_name FROM Books b WHERE LOWER(b.book_name) LIKE LOWER(CONCAT('%', :query, '%')) ORDER BY b.book_name")
+    List<String> findBookTitleSuggestions(@Param("query") String query);
+
 }

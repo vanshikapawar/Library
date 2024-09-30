@@ -149,5 +149,9 @@ public long countTotalBooksByGenres(List<String> genres) {
 public Books findByTitle(String title) {
     return bookDao.findByName(title).orElse(null);
 }
+@Override
+public List<String> getBookTitleSuggestions(String query) {
+    return bookDao.findBookTitleSuggestions(query);
+}
 		
 }

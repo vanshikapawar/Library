@@ -293,4 +293,9 @@ public ResponseEntity<Map<String, String>> getBookDetails(@RequestParam String t
     }
 }
 
+@GetMapping("/bookTitleSuggestions")
+public ResponseEntity<List<String>> getBookTitleSuggestions(@RequestParam String query) {
+    List<String> suggestions = bookService.getBookTitleSuggestions(query);
+    return ResponseEntity.ok(suggestions);
+}
 }

@@ -483,3 +483,24 @@ footer{
 .suggestion-item:hover {
     background-color: #f0f0f0;
 }
+#titleSuggestions {
+    position: absolute;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    background-color: white;
+    border: 1px solid #ccc;
+    max-height: 150px;
+    overflow-y: auto;
+    z-index: 1000;
+    width: calc(100% - 40px);
+}
+
+#titleSuggestions li {
+    padding: 10px;
+    cursor: pointer;
+}
+
+#titleSuggestions li:hover {
+    background-color: #f0f0f0;
+}

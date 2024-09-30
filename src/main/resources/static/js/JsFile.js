@@ -8,37 +8,116 @@ document.addEventListener("DOMContentLoaded", function() {
 	
     autoPopulateBookDetails();
 
+    setupBookTitleSuggestions();
     // Add this function after the existing code
-function autoPopulateBookDetails() {
+    function autoPopulateBookDetails() {
     const titleInput = document.getElementById("title");
     const authorInput = document.getElementById("author");
     const genreInput = document.getElementById("genre");
     const addToExistingCheckbox = document.getElementById("add-to-existing");
+    const suggestionsList = document.getElementById("titleSuggestions");
 
     addToExistingCheckbox.addEventListener("change", function() {
         if (this.checked) {
-            titleInput.addEventListener("blur", fetchBookDetails);
+            titleInput.addEventListener("input", fetchBookTitleSuggestions);
         } else {
-            titleInput.removeEventListener("blur", fetchBookDetails);
+            titleInput.removeEventListener("input", fetchBookTitleSuggestions);
+            suggestionsList.style.display = "none";
             authorInput.value = "";
             genreInput.value = "";
         }
     });
-
-    function fetchBookDetails() {
-        if (this.value.trim() !== "") {
-            fetch(`/bookDetails?title=${encodeURIComponent(this.value)}`)
+    
+    function fetchBookTitleSuggestions() {
+        const query = this.value.trim();
+        if (query.length >= 2) {
+            fetch(`/bookTitleSuggestions?query=${encodeURIComponent(query)}`)
                 .then(response => response.json())
                 .then(data => {
-                    if (data) {
-                        authorInput.value = data.author || "";
-                        genreInput.value = data.genre || "";
+                    suggestionsList.innerHTML = "";
+                    if (data.length > 0) {
+                        data.forEach(title => {
+                            const li = document.createElement("li");
+                            li.textContent = title;
+                            li.addEventListener("click", function() {
+                                titleInput.value = title;
+                                suggestionsList.style.display = "none";
+                                fetchBookDetails(title);
+                            });
+                            suggestionsList.appendChild(li);
+                        });
+                        suggestionsList.style.display = "block";
+                    } else {
+                        suggestionsList.style.display = "none";
                     }
                 })
-                .catch(error => console.error("Error fetching book details:", error));
+                .catch(error => console.error("Error fetching book title suggestions:", error));
+        } else {
+            suggestionsList.style.display = "none";
         }
     }
+
+  
+
+    // Initial setup
+    if (addToExistingCheckbox.checked) {
+        titleInput.addEventListener("input", fetchBookTitleSuggestions);
+    }
 }
+function fetchBookDetails(title) {
+    fetch(`/bookDetails?title=${encodeURIComponent(title)}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data) {
+                document.getElementById("author").value = data.author || "";
+                document.getElementById("genre").value = data.genre || "";
+            }
+        })
+        .catch(error => console.error("Error fetching book details:", error));
+}
+    
+    function setupBookTitleSuggestions() {
+        const titleInput = document.getElementById("title");
+        const suggestionsList = document.createElement("ul");
+        suggestionsList.id = "titleSuggestions";
+        suggestionsList.style.display = "none";
+        titleInput.parentNode.insertBefore(suggestionsList, titleInput.nextSibling);
+    
+        titleInput.addEventListener("input", function() {
+            const query = this.value.trim();
+            if (query.length >= 2 && document.getElementById("add-to-existing").checked) {
+                fetch(`/bookTitleSuggestions?query=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        suggestionsList.innerHTML = "";
+                        if (data.length > 0) {
+                            data.forEach(title => {
+                                const li = document.createElement("li");
+                                li.textContent = title;
+                                li.addEventListener("click", function() {
+                                    titleInput.value = title;
+                                    suggestionsList.style.display = "none";
+                                    fetchBookDetails(title);
+                                });
+                                suggestionsList.appendChild(li);
+                            });
+                            suggestionsList.style.display = "block";
+                        } else {
+                            suggestionsList.style.display = "none";
+                        }
+                    })
+                    .catch(error => console.error("Error fetching book title suggestions:", error));
+            } else {
+                suggestionsList.style.display = "none";
+            }
+        });
+    
+        document.addEventListener("click", function(event) {
+            if (!suggestionsList.contains(event.target) && event.target !== titleInput) {
+                suggestionsList.style.display = "none";
+            }
+        });
+    }
 
 	const emailField = document.getElementById("emaill");
 	    if (emailField) {
