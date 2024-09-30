@@ -425,5 +425,36 @@ footer{
 .genre-option input {
     margin-right: 8px; /* Space between checkbox and label */
 }
+.pagination-container {
+    display: flex;
+    justify-content: center; /* Center the buttons and text */
+    align-items: center; /* Align items vertically */
+    margin-top: 20px;
+}
 
+.pagination-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    margin: 0 10px; /* Add space between buttons */
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.pagination-btn:hover {
+    background-color: #0056b3;
+}
+
+.pagination-info {
+    font-size: 16px;
+    color: white; /* White text color */
+    margin: 0 10px; /* Add space between buttons and text */
+}
+.pagination-btn:disabled {
+    background-color: grey; /* Grey background for disabled state */
+    cursor: not-allowed; /* Change cursor to indicate unclickable */
+    color: #ccc; /* Light grey text color */
+}
 

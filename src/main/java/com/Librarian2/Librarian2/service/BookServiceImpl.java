@@ -4,9 +4,10 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import org.hibernate.annotations.DialectOverride.OverridesAnnotation;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.Librarian2.Librarian2.dao.BookDao;
@@ -23,10 +24,36 @@ public class BookServiceImpl implements BookService{
 	@Autowired
 	private IssueDao issuedDao;
 	
+
 	@Override
-	public List<Books> getBook() {
-		return bookDao.findAll();
+	public long countTotalBooks() {
+        return bookDao.count();
+    }
+
+	@Override
+public long countTotalBooksByGenres(List<String> genres) {
+    return bookDao.countByGenreIn(genres);
+}
+
+	@Override
+	public List<Books> getBook(Integer pageNo, Integer pageSize) {
+		// int pageSize = 2;
+		// int pageNumber = 1;
+
+		Pageable p = PageRequest.of(pageNo, pageSize);
+		Page<Books> pageBook = bookDao.findAll(p);
+		List<Books> allbook = pageBook.getContent();
+		return allbook;
 	}
+
+	@Override
+	public List<Books> getBooksByGenres(List<String> genres, Integer pageNo, Integer pageSize){
+		Pageable p = PageRequest.of(pageNo, pageSize);
+		Page<Books> pageBooks = bookDao.findByGenreIn(genres, p);
+		List<Books> allbook = pageBooks.getContent();
+		return allbook;
+	}
+
 
 	@Override
 	public Books addBook(Books book) {
@@ -113,9 +140,9 @@ public class BookServiceImpl implements BookService{
 		return bookDao.getAllGenres();
 	}
 	
-	@Override
-	public List<Books> getBooksByGenres(List<String> genres) {
-        return bookDao.findByGenreIn(genres); // Use 'findByGenreIn' to fetch books
-    }
+	// @Override
+	// public List<Books> getBooksByGenres(List<String> genres) {
+    //     return bookDao.findByGenreIn(genres); // Use 'findByGenreIn' to fetch books
+    // }
 		
 }

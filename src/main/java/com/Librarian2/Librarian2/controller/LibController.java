@@ -3,19 +3,19 @@ package com.Librarian2.Librarian2.controller;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.springframework.http.MediaType;
-import org.springframework.http.HttpHeaders;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -58,11 +58,38 @@ public class LibController {
 	}
 	
 	@GetMapping("/books")
-	public List<Books> getBooks(){
-		return this.bookService.getBook();
+	public Map<String, Object> getBooks(
+		@RequestParam(value="pageNo", defaultValue="0", required=false) Integer pageNo,
+		@RequestParam(value="pageSize", defaultValue="10", required=false) Integer pageSize) {
+		
+		List<Books> books = bookService.getBook(pageNo, pageSize);
+		long totalBooks = bookService.countTotalBooks();
+		int totalPages = (int) Math.ceil((double) totalBooks / pageSize);
+
+		Map<String, Object> response = new HashMap<>();
+		response.put("books", books);
+		response.put("totalPages", totalPages);
+
+		return response;
 	}
 	
 	
+	@GetMapping("/genre")
+	public Map<String, Object> getBooksByGenres(
+			@RequestParam List<String> genre,
+			@RequestParam(value = "pageNo", defaultValue = "0", required = false) Integer pageNo,
+			@RequestParam(value = "pageSize", defaultValue = "10", required = false) Integer pageSize) {
+				List<Books> books = bookService.getBooksByGenres(genre, pageNo, pageSize);
+				long totalBooks = bookService.countTotalBooksByGenres(genre);
+		int totalPages = (int) Math.ceil((double) totalBooks / pageSize);
+
+		Map<String, Object> response = new HashMap<>();
+		response.put("books", books);
+		response.put("totalPages", totalPages);
+
+		return response;  // Pass the list of genres and pagination parameters
+	}
+
 	@GetMapping("/events")
 	public List<Events> getEvents(){
 		return this.eventService.getEvents();
@@ -232,9 +259,19 @@ public class LibController {
 			return bookService.getGenres(); // Implement this method in your service
 		}
 
-		@GetMapping("/genre")
-		public List<Books> getBooksByGenres(@RequestParam List<String> genre) {
-			return bookService.getBooksByGenres(genre); // Pass the list of genres
-		}
+		// @GetMapping("/genre")
+		// public List<Books> getBooksByGenres(@RequestParam List<String> genre) {
+		// 	return bookService.getBooksByGenres(genre); // Pass the list of genres
+		// }
+
+
+
+		@GetMapping("/totalCount")
+    public ResponseEntity<Map<String, Long>> getTotalBooksCount() {
+        long totalBooks = bookService.countTotalBooks();
+        Map<String, Long> response = new HashMap<>();
+        response.put("totalBooks", totalBooks);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
 }

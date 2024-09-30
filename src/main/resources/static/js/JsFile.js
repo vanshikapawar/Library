@@ -133,7 +133,7 @@ document.addEventListener("DOMContentLoaded", function() {
 										if (total_stock < available_copies) {
 										            alert("Total stock must be equal to or greater than available copies. Please check the entries");
 										            return;
-										        }						
+									        }						
   
             fetch(addToExisting ? "/addBookCopies" : "/books", {
                 method: "POST",
@@ -178,6 +178,7 @@ document.addEventListener("DOMContentLoaded", function() {
 //         label.innerHTML = `<input type="radio" name="genre" value="${genre}"> ${genre}`;
 //         dropdownContent.appendChild(label);
 //     });
+
 
 //     // Add event listeners to each radio button
 //     const genreInputs = dropdownContent.querySelectorAll('input[type="radio"]');
@@ -233,27 +234,39 @@ function populateGenreDropdown(genres) {
 }
 
 
+
+
 // Update the book list based on selected genres
-function updateBookListByGenres() {
+function updateBookListByGenres(pageNo = 0, pageSize = 10) {
+    
+    // Ensure pageNo is not an event object
+    if (typeof pageNo !== 'number') {
+        pageNo = 0; // Set to default page number if it's not a valid number
+    }
+
     const selectedGenres = Array.from(document.querySelectorAll('#genreDropdown input[type="checkbox"]:checked'))
         .map(checkbox => checkbox.value);
 
-    let url = "/books";  // Default URL to fetch all books
+    let url = `/books`;  // Default URL to fetch all books
 
     if (selectedGenres.length > 0) {
-        // Create a query string with the selected genres
         const genreQuery = selectedGenres.map(genre => `genre=${encodeURIComponent(genre)}`).join("&");
         url = `/genre?${genreQuery}`;  // If genres are selected, fetch books by genre
     }
-
+    if (url.includes('?')) {
+        url += `&pageNo=${pageNo}&pageSize=${pageSize}`;
+    } else {
+        url += `?pageNo=${pageNo}&pageSize=${pageSize}`;
+    }
     fetch(url)
         .then(response => response.json())
         .then(data => {
-            console.log("Fetched data:", data);
-            updateBookTable(data);  // Call function to update table
+            updateBookTable(data.books);
+            updatePagination(data.totalPages, pageNo);
         })
         .catch(error => console.error("Error fetching book list:", error));
 }
+
 
 // Fetch genres from the API and populate the dropdown
 function fetchGenres() {
@@ -292,12 +305,16 @@ function fetchGenres() {
 
 
 // Fetch books from the API and update the book list
-function fetchAndUpdateBookList() {
-    fetch("/books")
-    .then(response => response.json())
-    .then(data => updateBookTable(data))
-    .catch(error => console.error("Error fetching book list:", error));
+function fetchAndUpdateBookList(pageNo = 0, pageSize = 10) {
+    fetch(`/books?pageNo=${pageNo}&pageSize=${pageSize}`)
+        .then(response => response.json())
+        .then(data => {
+            updateBookTable(data.books);
+            updatePagination(data.totalPages, pageNo);
+        })
+        .catch(error => console.error("Error fetching book list:", error));
 }
+
 
 // Function to update the book table with filtered data
 function updateBookTable(books) {
@@ -558,6 +575,7 @@ if (returnBookForm) {
     });
 }
 
+
 function confirmAmountPaid() {
     // Enable the Return Book button only if the amount is confirmed as paid
     submitReturnBtn.disabled = !amountConfirmRadio.checked;
@@ -567,6 +585,7 @@ function confirmAmountPaid() {
 if (amountConfirmRadio) {
     amountConfirmRadio.addEventListener("change", confirmAmountPaid);
 }
+
 
 
 function fetchCustName() {
@@ -846,5 +865,26 @@ customerSearchForm.addEventListener("submit", function(event) {
         });
 });
 
-    
+
+function updatePagination(totalPages, currentPage) {
+    const prevButton = document.getElementById("prevPage");
+    const nextButton = document.getElementById("nextPage");
+    const pageInfo = document.getElementById("pageInfo");
+
+    prevButton.disabled = currentPage === 0;
+    nextButton.disabled = currentPage === totalPages - 1;
+
+    pageInfo.textContent = `Page ${currentPage + 1} of ${totalPages}`;
+
+    prevButton.onclick = () => updateBookListByGenres(currentPage - 1);
+    nextButton.onclick = () => updateBookListByGenres(currentPage + 1);
+}
+
+
+// Call the function initially to load the first page
+document.addEventListener("DOMContentLoaded", function() {
+    fetchAndUpdateBookList();
+});
+
+
 });

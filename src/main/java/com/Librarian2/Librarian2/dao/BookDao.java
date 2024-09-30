@@ -3,6 +3,8 @@ package com.Librarian2.Librarian2.dao;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -38,7 +40,15 @@ public interface BookDao extends JpaRepository<Books, Long>{
 	@Query(value = "SELECT * FROM books WHERE genre = :genre", nativeQuery = true)
     List<Books> findByGenre(@Param("genre") String genre);
 
-	@Query(value = "SELECT * FROM books WHERE genre IN (:genres)", nativeQuery = true)
-    List<Books> findByGenreIn(@Param("genres") List<String> genres);
+	// @Query(value = "SELECT * FROM books WHERE genre IN (:genres)", nativeQuery = true)
+    // List<Books> findByGenreIn(@Param("genres") List<String> genres);
 
+	@Query(value = "SELECT * FROM books WHERE genre IN (:genres)", 
+           countQuery = "SELECT COUNT(*) FROM books WHERE genre IN (:genres)", 
+           nativeQuery = true)
+    Page<Books> findByGenreIn(@Param("genres") List<String> genres, Pageable pageable);
+
+
+	@Query(value = "SELECT COUNT(*) FROM books WHERE genre IN (:genres)", nativeQuery = true)
+	long countByGenreIn(@Param("genres") List<String> genres);
 }
