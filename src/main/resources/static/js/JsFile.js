@@ -1139,3 +1139,55 @@ document.addEventListener("DOMContentLoaded", function() {
     setupRemoveBookSuggestions();
     setupIssueBookSuggestions();
 });
+
+const emailInput = document.getElementById("emaill");
+const emailSuggestions = document.getElementById("emailSuggestionss");
+const custNameInput = document.getElementById("cust_name");
+
+emailInput.addEventListener("input", function() {
+    const query = this.value.trim();
+    if (query.length >= 2) {
+        fetch(`/emailSuggestions?query=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(data => {
+                emailSuggestions.innerHTML = "";
+                if (data.length > 0) {
+                    data.forEach(email => {
+                        const suggestion = document.createElement("div");
+                        suggestion.className = "suggestion-item";
+                        suggestion.textContent = email;
+                        suggestion.addEventListener("click", function() {
+                            emailInput.value = email;
+                            emailSuggestions.style.display = "none";
+                            fetchCustomerName(email);
+                        });
+                        emailSuggestions.appendChild(suggestion);
+                    });
+                    emailSuggestions.style.display = "block";
+                } else {
+                    emailSuggestions.style.display = "none";
+                }
+            })
+            .catch(error => console.error("Error fetching email suggestions:", error));
+    } else {
+        emailSuggestions.style.display = "none";
+    }
+});
+
+document.addEventListener("click", function(event) {
+    if (!emailSuggestions.contains(event.target) && event.target !== emailInput) {
+        emailSuggestions.style.display = "none";
+    }
+});
+
+function fetchCustomerName(email) {
+    fetch(`/byEmail?email=${encodeURIComponent(email)}`)
+        .then(response => response.json())
+        .then(data => {
+            custNameInput.value = data.name || "";
+        })
+        .catch(error => {
+            console.error('Error fetching customer:', error);
+            custNameInput.value = "";
+        });
+}
