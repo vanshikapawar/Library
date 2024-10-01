@@ -1040,3 +1040,64 @@ document.addEventListener("click", function(event) {
 });
 
 });
+
+function setupRemoveBookSuggestions() {
+    const bookNameInput = document.getElementById("bookName");
+    const authorInput = document.getElementById("authorr");
+    const suggestionsList = document.createElement("ul");
+    suggestionsList.id = "removeBookSuggestions";
+    suggestionsList.style.display = "none";
+    bookNameInput.parentNode.insertBefore(suggestionsList, bookNameInput.nextSibling);
+
+    bookNameInput.addEventListener("input", function() {
+        const query = this.value.trim();
+        if (query.length >= 2) {
+            fetch(`/bookTitleSuggestions?query=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    suggestionsList.innerHTML = "";
+                    if (data.length > 0) {
+                        data.forEach(bookName => {
+                            const li = document.createElement("li");
+                            li.textContent = bookName;
+                            li.addEventListener("click", function() {
+                                bookNameInput.value = bookName;
+                                suggestionsList.style.display = "none";
+                                fetchBookAuthor(bookName);
+                            });
+                            suggestionsList.appendChild(li);
+                        });
+                        suggestionsList.style.display = "block";
+                    } else {
+                        suggestionsList.style.display = "none";
+                    }
+                })
+                .catch(error => console.error("Error fetching book name suggestions:", error));
+        } else {
+            suggestionsList.style.display = "none";
+        }
+    });
+
+    document.addEventListener("click", function(event) {
+        if (!suggestionsList.contains(event.target) && event.target !== bookNameInput) {
+            suggestionsList.style.display = "none";
+        }
+    });
+}
+
+function fetchBookAuthor(bookName) {
+    fetch(`/bookDetails?title=${encodeURIComponent(bookName)}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data) {
+                
+                document.getElementById("authorr").value = data.author || "";
+            }
+        })
+        .catch(error => console.error("Error fetching book author:", error));
+}
+
+// Call this function when the page loads
+document.addEventListener("DOMContentLoaded", function() {
+    setupRemoveBookSuggestions();
+});
