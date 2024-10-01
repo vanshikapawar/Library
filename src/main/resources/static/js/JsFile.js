@@ -1096,8 +1096,46 @@ function fetchBookAuthor(bookName) {
         })
         .catch(error => console.error("Error fetching book author:", error));
 }
+function setupIssueBookSuggestions() {
+    const bookNameInput = document.getElementById("book_name");
+    const suggestionsList = document.getElementById("issueBookSuggestions");
 
+    bookNameInput.addEventListener("input", function() {
+        const query = this.value.trim();
+        if (query.length >= 2) {
+            fetch(`/bookTitleSuggestions?query=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    suggestionsList.innerHTML = "";
+                    if (data.length > 0) {
+                        data.forEach(book_name => {
+                            const li = document.createElement("li");
+                            li.textContent = book_name;
+                            li.addEventListener("click", function() {
+                                bookNameInput.value = book_name;
+                                suggestionsList.style.display = "none";
+                            });
+                            suggestionsList.appendChild(li);
+                        });
+                        suggestionsList.style.display = "block";
+                    } else {
+                        suggestionsList.style.display = "none";
+                    }
+                })
+                .catch(error => console.error("Error fetching book name suggestions:", error));
+        } else {
+            suggestionsList.style.display = "none";
+        }
+    });
+
+    document.addEventListener("click", function(event) {
+        if (!suggestionsList.contains(event.target) && event.target !== bookNameInput) {
+            suggestionsList.style.display = "none";
+        }
+    });
+}
 // Call this function when the page loads
 document.addEventListener("DOMContentLoaded", function() {
     setupRemoveBookSuggestions();
+    setupIssueBookSuggestions();
 });
