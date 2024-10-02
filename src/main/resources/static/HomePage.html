@@ -215,7 +215,10 @@
     <form id="return-book-form">
         
         <label for="email">Customer Email:</label> 
-        <input type="text" id="cust_email" name="email" required><br>
+        <div class="email-input-wrapper">
+            <input type="text" id="cust_email" name="email" required>
+            <div id="emailSuggestionsReturn" class="suggestions-dropdown"></div>
+        </div>
 
         <label for="cust_name">Customer Name:</label>
         <input type="text" id="cust_namee" name="cust_name" required><br>

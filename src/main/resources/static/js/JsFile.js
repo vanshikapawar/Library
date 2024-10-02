@@ -119,27 +119,68 @@ function fetchBookDetails(title) {
         });
     }
 
-	const emailField = document.getElementById("emaill");
-	    if (emailField) {
-	        emailField.addEventListener("blur", fetchCustomerName);
-	    }
+    const emailCust = document.getElementById("cust_email");
+    const emailSuggestionsReturn = document.getElementById("emailSuggestionsReturn");
+    
+    if (emailCust) {
+        emailCust.addEventListener("input", function() {
+            const query = this.value.trim();
+            if (query.length >= 2) {
+                fetch(`/emailSuggestions?query=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        emailSuggestionsReturn.innerHTML = "";
+                        if (data.length > 0) {
+                            data.forEach(email => {
+                                const suggestion = document.createElement("div");
+                                suggestion.className = "suggestion-item";
+                                suggestion.textContent = email;
+                                suggestion.addEventListener("click", function() {
+                                    emailCust.value = email;
+                                    emailSuggestionsReturn.style.display = "none";
+                                    fetchCustName();
+                                    console.log("Email entered, fetch book data:", email);
+                                    populateBookDropdown(email);
+                                });
+                                emailSuggestionsReturn.appendChild(suggestion);
+                            });
+                            emailSuggestionsReturn.style.display = "block";
+                        } else {
+                            emailSuggestionsReturn.style.display = "none";
+                        }
+                    })
+                    .catch(error => console.error("Error fetching email suggestions:", error));
+            } else {
+                emailSuggestionsReturn.style.display = "none";
+            }
+        });
+    
+        emailCust.addEventListener("blur", function () {
+            fetchCustName();
+            console.log("Email entered, fetch book data:", emailCust.value);
+            populateBookDropdown(emailCust.value);
+        });
+    }
+    
+    // Close suggestions when clicking outside
+    document.addEventListener("click", function(event) {
+        if (!emailSuggestionsReturn.contains(event.target) && event.target !== emailCust) {
+            emailSuggestionsReturn.style.display = "none";
+        }
+    });
 		
-	
-		const emailCust = document.getElementById("cust_email");
-		if (emailCust) {
-		    emailCust.addEventListener("blur", function () {
-		        fetchCustName();  // Call the function to fetch customer name
-		        console.log("Email entered, fetch book data:", emailCust.value);
-		        populateBookDropdown(emailCust.value); // Call the dropdown population function
-		    });
-		}
-		
-		
-		
-		const amtByEmail = document.getElementById("book");
-		if(amtByEmail){
-			amtByEmail.addEventListener("blur",fetchAmountToPay);
-		}
+    const bookDropdown = document.getElementById('book');
+    if (bookDropdown) {
+        bookDropdown.addEventListener('change', function() {
+            const selectedBook = this.value;
+            const email = document.getElementById('cust_email').value;
+            if (selectedBook && email) {
+                fetchAmountToPay(email, selectedBook);
+            } else {
+                document.getElementById('amount_to_be_paid').value = '';
+            }
+        });
+    }
 
     //registering new customers
     const registerForm = document.getElementById("customer-form");
@@ -279,46 +320,11 @@ function fetchBookDetails(title) {
         });
     }
 
-
-    
-// // Function to dynamically populate the dropdown
-// function populateGenreDropdown(genres) {
-//     const dropdownContent = document.getElementById('genreDropdown');
-//     dropdownContent.innerHTML = ''; // Clear any existing genres
-
-//     genres.forEach(genre => {
-//         const label = document.createElement('label');
-//         label.innerHTML = `<input type="radio" name="genre" value="${genre}"> ${genre}`;
-//         dropdownContent.appendChild(label);
-//     });
-
-
-//     // Add event listeners to each radio button
-//     const genreInputs = dropdownContent.querySelectorAll('input[type="radio"]');
-//     genreInputs.forEach(input => {
-//         input.addEventListener('change', updateBookListByGenre);
-//     });
-// }
-
 // Populate dropdown with checkboxes for each genre
 function populateGenreDropdown(genres) {
     const genreDropdown = document.getElementById("genreDropdown");
     genreDropdown.innerHTML = ""; // Clear existing content
 
-    // genres.forEach(genre => {
-    //     const checkbox = document.createElement("input");
-    //     checkbox.type = "checkbox";
-    //     checkbox.value = genre;
-    //     checkbox.id = genre;
-
-    //     const label = document.createElement("label");
-    //     label.htmlFor = genre;
-    //     label.appendChild(document.createTextNode(genre));
-
-    //     genreDropdown.appendChild(checkbox);
-    //     genreDropdown.appendChild(label);
-    //     genreDropdown.appendChild(document.createElement("br"));
-    // });
     genres.forEach(genre => {
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
@@ -388,33 +394,6 @@ function fetchGenres() {
         .then(data => populateGenreDropdown(data))
         .catch(error => console.error('Error fetching genres:', error));
 }
-    
-//     function fetchAndUpdateBookList() {
-//     fetch("/books")
-//     .then(response => response.json())
-//     .then(data => {
-// 		console.log("data form the book table", data);
-//         const bookTableBody = document.getElementById("bookTableBody");
-// 		console.log("the book table body", bookTableBody);
-//         bookTableBody.innerHTML = "";
-
-//         data.forEach(books => {
-//             const newRow = document.createElement('tr');
-//             newRow.innerHTML = `
-//                 <td>${books.book_id}</td>
-//                 <td>${books.book_name}</td>
-//                 <td>${books.author}</td>
-//                 <td>${books.genre}</td>
-//                 <td>${books.total_stock}</td>
-// 				<td>${books.available_copies}</td>
-//                 <!-- Add more <td> elements for other book attributes -->
-//             `;
-//             bookTableBody.appendChild(newRow);
-// 			console.log("the new row",newRow);
-//         });
-//     })
-//     .catch(error => console.error("Error fetching book list:", error));
-// }
 
 
 // Fetch books from the API and update the book list
@@ -731,9 +710,9 @@ function fetchCustomerName() {
   }
 
   
-  function fetchAmountToPay() {
-      const email = document.getElementById("cust_email").value; // Get the email value
-      const bookName = document.getElementById("book").value; // Get the book name value
+  function fetchAmountToPay(email,bookName) {
+    //   const email = document.getElementById("cust_email").value; // Get the email value
+    //   const bookName = document.getElementById("book").value; // Get the book name value
 
       if (email && bookName) {
           fetch(`/getAmountToPay?email=${encodeURIComponent(email)}&book_name=${encodeURIComponent(bookName)}`)
@@ -744,13 +723,19 @@ function fetchCustomerName() {
                   return response.json(); // Parse the JSON response
               })
               .then(data => {
-                  const amountField = document.getElementById("amount_to_be_paid");
-                  if (data.amount) { // Assuming the response has an 'amount' field
-                      amountField.value = data.amount; // Populate the amount field
-                  } else {
-                      alert("Amount not found for this book and customer.");
-                      amountField.value = ''; // Clear the amount field if not found
-                  }
+                //   const amountField = document.getElementById("amount_to_be_paid");
+                //   if (data.amount) { // Assuming the response has an 'amount' field
+                //       amountField.value = data.amount; // Populate the amount field
+                //   } else {
+                //       alert("Amount not found for this book and customer.");
+                //       amountField.value = ''; // Clear the amount field if not found
+                //   }
+                if (data.amount !== undefined) {
+                    document.getElementById('amount_to_be_paid').value = data.amount;
+                } else {
+                    alert("Amount not found for this book and customer.");
+                    document.getElementById('amount_to_be_paid').value = '';
+                }
               })
               .catch(error => {
                   console.error("Error fetching amount to pay:", error);
@@ -1191,3 +1176,4 @@ function fetchCustomerName(email) {
             custNameInput.value = "";
         });
 }
+
