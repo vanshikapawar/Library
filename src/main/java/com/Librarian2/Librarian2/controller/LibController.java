@@ -287,6 +287,7 @@ public ResponseEntity<Map<String, String>> getBookDetails(@RequestParam String t
         Map<String, String> details = new HashMap<>();
         details.put("author", book.getAuthor());
         details.put("genre", book.getGenre());
+		details.put("available_copies", String.valueOf(book.getAvailable_copies()));
         return ResponseEntity.ok(details);
     } else {
         return ResponseEntity.notFound().build();

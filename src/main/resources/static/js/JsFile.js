@@ -1075,7 +1075,7 @@ function fetchBookAuthor(bookName) {
         .then(response => response.json())
         .then(data => {
             if (data) {
-                
+                document.getElementById("availCopies").value = data.available_copies || "";
                 document.getElementById("authorr").value = data.author || "";
             }
         })
